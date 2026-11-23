@@ -149,7 +149,7 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
 </head>
 <body>
 <header>
-  <div><h1><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-4px;margin-right:6px"><ellipse cx="12" cy="19.5" rx="9" ry="3.2" fill="#52514e"/><ellipse cx="12" cy="13.6" rx="6.4" ry="2.8" fill="#7d7b75"/><ellipse cx="12" cy="8.6" rx="4.2" ry="2.3" fill="#a5a29b"/><ellipse cx="12" cy="4.4" rx="2.4" ry="1.7" fill="var(--accent)"/></svg>Cairn<span> · carnet de trail · v2.2</span></h1><div class="sub" id="subtitle"></div></div>
+  <div><h1><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-4px;margin-right:6px"><ellipse cx="12" cy="19.5" rx="9" ry="3.2" fill="#52514e"/><ellipse cx="12" cy="13.6" rx="6.4" ry="2.8" fill="#7d7b75"/><ellipse cx="12" cy="8.6" rx="4.2" ry="2.3" fill="#a5a29b"/><ellipse cx="12" cy="4.4" rx="2.4" ry="1.7" fill="var(--accent)"/></svg>Cairn<span> · carnet de trail · v2.4 β</span></h1><div class="sub" id="subtitle"></div></div>
   <nav>
     <a href="#carte" data-v="carte"><span class="lg">1 · Terrain de jeu</span><span class="sm"><span class="ic">🗺️</span>Terrain</span></a>
     <a href="#performance" data-v="performance"><span class="lg">2 · Sous la frontale</span><span class="sm"><span class="ic">📈</span>Forme</span></a>
@@ -333,6 +333,11 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
 <section class="view" id="v-accueil">
   <div class="card" style="max-width:860px;margin:10px auto">
     <h2>Bienvenue dans Cairn</h2>
+    <div class="card" id="wMajWrap" style="display:none;margin:4px 0 14px;padding:12px 14px;background:#eef6f2;border:1px solid #b9ddd0">
+      <b>Mise à jour rapide</b> · Tu as reçu un fichier <b>cairn_maj_….json</b> ? Il ajoute tes dernières sorties sans réimporter toute l'archive.
+      <div style="margin-top:8px"><button class="pri" id="wMajPick">Ajouter mes dernières sorties</button><input type="file" id="wMajFile" accept=".json,application/json,text/plain" hidden></div>
+      <div class="sub" id="wMajMsg" style="margin-top:6px"></div>
+    </div>
     <p class="hint">Cet outil analyse toutes tes activités Strava : carte de tes traces, forme et tendances, cardio, montées et descentes, courses, plan de préparation et livre photo. Il fonctionne à partir de l'archive complète de ton compte Strava. <b>Tout est calculé dans ce navigateur : ton archive n'est envoyée nulle part.</b></p>
     <ol class="steps">
       <li>Sur un ordinateur, va sur <a href="https://www.strava.com/account" target="_blank" rel="noopener">strava.com → Paramètres → Mon compte</a>. Tout en bas : <b>« Télécharger ou supprimer votre compte »</b> → <b>Commencer</b>.</li>
@@ -341,14 +346,34 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
       <li>Dépose ce fichier ci-dessous, sans le décompresser. L'import prend de 2 à 15 minutes selon le nombre d'activités et de photos : garde cet onglet ouvert.</li>
     </ol>
     <label class="f" style="flex-direction:row;align-items:center;gap:8px;margin-bottom:10px"><input type="checkbox" id="wPhotos" checked> Importer aussi les photos (onglet Carnet de route)</label>
-    <div class="drop" id="wDrop">Glisse ici ton fichier <b>export_….zip</b><br><br><button class="pri" id="wPick">Choisir le fichier</button><input type="file" id="wFile" accept=".zip,application/zip" hidden></div>
+    <div class="drop" id="wDrop">Glisse ici ton fichier <b>export_….zip</b><br><br><button class="pri" id="wPick">Choisir le fichier</button><input type="file" id="wFile" accept=".zip,.json,application/zip,application/json" hidden></div>
     <div id="wProg" style="display:none"><div class="prog"><i id="wBar"></i></div><div class="sub" id="wMsg"></div></div>
+    <p class="note">🧪 Tu as une montre Garmin ? <a href="#garmin">Tester la mise à jour automatique avec ta clé API Garmin</a> (expérimental).</p>
     <p class="note" id="wBackWrap" style="display:none"><a href="#carte" id="wBack">← Revenir à mes données</a> · Importer une nouvelle archive remplace les données actuelles. <a href="#" id="wClear">Effacer toutes mes données de ce navigateur</a></p>
-    <p class="note">Les données restent dans ce navigateur : ouvre toujours Cairn avec le même navigateur, sur le même ordinateur. Pour mettre à jour, demande une nouvelle archive à Strava et importe-la avec le bouton « Nouvelles données » en haut de la page.</p>
+    <p class="note">Les données restent dans ce navigateur : ouvre toujours Cairn avec le même navigateur, sur le même ordinateur. Pour mettre à jour, demande une nouvelle archive à Strava et importe-la avec le bouton « Nouvelles données » en haut de la page, ou ajoute un fichier de mise à jour rapide <b>cairn_maj_….json</b>.</p>
   </div>
 </section>
 
 <!-- ============ SOUVENIRS ============ -->
+<!-- ============ TEST GARMIN ============ -->
+<section class="view" id="v-garmin">
+  <div class="card" style="max-width:860px;margin:10px auto">
+    <h2>Tester ma clé Garmin <span class="sub">(expérimental)</span></h2>
+    <p class="hint">Ce test vérifie si Cairn peut lire tes données directement dans Garmin Connect avec ta <b>clé API personnelle</b>. Il ne modifie pas tes données Cairn. <b>Ta clé ne quitte pas ce téléphone</b> : elle est envoyée uniquement à Garmin. Ne la communique à personne, pas même à Claude.</p>
+    <ol class="steps">
+      <li>Sur le site <a href="https://connect.garmin.com" target="_blank" rel="noopener">connect.garmin.com</a> (connecté à ton compte) : <b>Paramètres → Personal API Key</b> (« Clé API personnelle ») → <b>Create Key</b>. Accepte les conditions, choisis une durée (90 jours suffisent pour le test).</li>
+      <li>Copie la clé : elle ne s'affiche qu'une fois. Colle-la ci-dessous et lance le test.</li>
+      <li>À la fin, appuie sur <b>« Copier le rapport »</b> et colle-le dans la conversation avec Claude. Le rapport ne contient pas ta clé.</li>
+    </ol>
+    <label class="f" style="display:block;margin:10px 0 6px">Clé API personnelle Garmin
+      <input type="password" id="gKey" autocomplete="off" spellcheck="false" style="width:100%;margin-top:4px;padding:8px;font:inherit;border:1px solid #d6d3cc;border-radius:8px"></label>
+    <label class="f" style="flex-direction:row;align-items:center;gap:8px;margin-bottom:10px"><input type="checkbox" id="gKeep"> Mémoriser la clé sur ce téléphone</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="pri" id="gRun">Lancer le test</button><button id="gCopy" style="display:none">Copier le rapport</button><button id="gForget" style="display:none">Oublier la clé</button></div>
+    <pre id="gOut" style="white-space:pre-wrap;font-size:12.5px;line-height:1.45;background:#f7f6f3;border:1px solid #e4e1da;border-radius:8px;padding:10px;margin-top:12px;display:none"></pre>
+    <p class="note"><a href="#accueil">← Retour</a></p>
+  </div>
+</section>
+
 <section class="view" id="v-souvenirs">
   <div class="card" id="sImport" style="display:none">
     <h2>Importer tes photos depuis l'archive Strava</h2>
@@ -398,6 +423,7 @@ let runs = [];
 const inited = {};
 function route(){
   const v = (location.hash||'#carte').slice(1);
+  if(v==='garmin'){ showGarmin(); return; }
   if(!DATA.acts.length || v==='accueil'){ showWelcome(); return; }
   const name = ['carte','performance','preparation','souvenirs'].includes(v)? v : 'carte';
   $$('.view').forEach(e=>e.classList.toggle('on', e.id==='v-'+name));
@@ -641,7 +667,10 @@ function showWelcome(){
   $$('.view').forEach(e=>e.classList.toggle('on', e.id==='v-accueil'));
   $$('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v==='accueil'));
   $('#wBackWrap').style.display = DATA.acts.length? '' : 'none';
+  $('#wMajWrap').style.display = DATA.acts.length? '' : 'none';
   if(_wInit) return; _wInit=true;
+  const mp=$('#wMajFile'); $('#wMajPick').onclick=()=>mp.click();
+  mp.onchange=()=>{ if(mp.files[0]) runMaj(mp.files[0]); };
   const pick=$('#wFile'), dz=$('#wDrop');
   $('#wPick').onclick=()=>pick.click();
   pick.onchange=()=>{ if(pick.files[0]) runFull(pick.files[0]); };
@@ -651,7 +680,41 @@ function showWelcome(){
   let armed=0; $('#wClear').onclick=async e=>{ e.preventDefault(); if(Date.now()-armed>4000){ armed=Date.now(); $('#wClear').textContent='Cliquer à nouveau pour confirmer'; return; }
     try{ await IDB.clear('kv'); await IDB.clear('photos'); localStorage.removeItem('ta_races'); }catch(_){} location.hash=''; location.reload(); };
 }
+async function runMaj(file){
+  const msg=$('#wMajMsg'); if($('#wMajWrap').style.display==='none') $('#wMajWrap').style.display=''; msg.textContent='Lecture du fichier…';
+  try{ const r=await mergeUpdate(file);
+    msg.innerHTML = r.n? `<b>${r.n} sortie${r.n>1?'s':''} ajoutée${r.n>1?'s':''}</b>${r.hr?` (et la FC de ${r.hr} sortie${r.hr>1?'s':''} déjà présente${r.hr>1?'s':''})`:''}. Chargement…` : (r.hr? `FC ajoutée à ${r.hr} sortie${r.hr>1?'s':''}. Chargement…` : 'Aucune nouvelle sortie : tes données étaient déjà à jour.');
+    if(r.n||r.hr) setTimeout(()=>{ location.hash='#performance'; location.reload(); }, 1800);
+  }catch(e){ msg.innerHTML='<b style="color:#c0362c">Mise à jour impossible :</b> '+e.message; }
+}
+async function mergeUpdate(file){
+  let U; try{ U=JSON.parse(await file.text()); }catch(e){ throw new Error("ce fichier n'est pas un fichier de mise à jour Cairn"); }
+  if(!U || U.cairn!=='maj' || !Array.isArray(U.acts)) throw new Error("ce fichier n'est pas un fichier de mise à jour Cairn (cairn_maj_….json)");
+  const st=await IDB.get('kv','data'); if(!st || !st.acts || !st.acts.length) throw new Error("importe d'abord ton archive Strava complète");
+  const byId=new Map(st.acts.map(a=>[a.i,a])); let n=0, nh=0; st.terr=st.terr||{};
+  for(const x of U.acts){
+    if(!x || !x.i || !x.d || !x.s) continue;
+    const old=byId.get(String(x.i));
+    if(old){ if(!old.hr && x.hr>40){ old.hr=x.hr; if(x.hrm) old.hrm=x.hrm; nh++; } continue; }
+    const a={i:String(x.i), n:String(x.n||sportFr(x.s)), s:String(x.s), d:String(x.d).slice(0,16), km:+x.km||0, dp:Math.round(+x.dp||0), mt:Math.round(+x.mt||0), et:Math.round(+x.et||+x.mt||0), loc:String(x.loc||'')};
+    if(a.s==='Run' && a.km>0 && a.dp/a.km>=30) a.s='TrailRun';
+    if(x.hr>40&&x.hr<230) a.hr=+(+x.hr).toFixed(1); if(x.hrm>40&&x.hrm<240) a.hrm=Math.round(x.hrm);
+    if(x.p) a.p=String(x.p);
+    if(x.rc) a.rc=1; if(Array.isArray(x.rk)) a.rk=x.rk;
+    if((a.s==='Run'||a.s==='TrailRun') && a.km>0 && a.mt>0){ a.ke=+(a.km+a.dp/100).toFixed(2); const v=vdot(a.ke*1000,a.mt); if(a.km>=3&&v>=20&&v<=85) a.vd=+v.toFixed(1); }
+    if(U.terr && U.terr[a.i]) st.terr[a.i]=U.terr[a.i];
+    st.acts.push(a); byId.set(a.i,a); n++;
+  }
+  if(n||nh){
+    st.acts.sort((x,y)=>x.d.localeCompare(y.d));
+    st.be=computeBE(st.acts);
+    st.gen=[st.gen||'', String(U.gen||''), st.acts[st.acts.length-1].d.slice(0,10)].sort().pop();
+    await IDB.put('kv',st,'data');
+  }
+  return {n, hr:nh};
+}
 async function runFull(file){
+  if(/\.json$/i.test(file.name)){ return runMaj(file); }
   const dz=$('#wDrop'); dz.style.pointerEvents='none'; dz.style.opacity=.5;
   const prog=(f,msg)=>{ $('#wProg').style.display=''; $('#wBar').style.width=Math.round(f*100)+'%'; $('#wMsg').textContent=msg; };
   const ph=$('#wPhotos').checked;
@@ -662,6 +725,111 @@ async function runFull(file){
     prog(1,`Terminé : ${r.n} activités, ${r.tracks} traces GPS, ${r.terr} profils de pente, ${r.races} courses détectées.${note} Chargement…`);
     setTimeout(()=>{ location.hash='#performance'; location.reload(); }, note.includes('non importées')? 6000 : 2000);
   }catch(e){ prog(0,''); $('#wMsg').innerHTML='<b style="color:#c0362c">Import impossible :</b> '+e.message; dz.style.pointerEvents=''; dz.style.opacity=''; }
+}
+
+/* ---------- test de l'API personnelle Garmin ---------- */
+const GHOST='https://personal.connectapi.garmin.com';
+let _gInit=false;
+function showGarmin(){
+  $$('.view').forEach(e=>e.classList.toggle('on', e.id==='v-garmin'));
+  $$('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v==='accueil'));
+  if(_gInit) return; _gInit=true;
+  let saved=''; try{ saved=localStorage.getItem('cairn_gkey')||''; }catch(e){}
+  if(saved){ $('#gKey').value=saved; $('#gKeep').checked=true; $('#gForget').style.display=''; }
+  $('#gRun').onclick=garminTest;
+  $('#gForget').onclick=()=>{ try{ localStorage.removeItem('cairn_gkey'); }catch(e){} $('#gKey').value=''; $('#gKeep').checked=false; $('#gForget').style.display='none'; };
+  $('#gCopy').onclick=async()=>{ const t=$('#gOut').textContent; try{ await navigator.clipboard.writeText(t); $('#gCopy').textContent='Rapport copié ✓'; }catch(e){ const r=document.createRange(); r.selectNodeContents($('#gOut')); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); $('#gCopy').textContent='Sélectionné : copie-le'; } setTimeout(()=>$('#gCopy').textContent='Copier le rapport',3000); };
+}
+function scanFIT(buf){ // inventaire d'un .FIT : messages, capteurs, données présentes
+  const u8=new Uint8Array(buf), dv=new DataView(buf); const R={ok:false,msgs:{},dev:[],rec:0,hr:0,gps:0,alt:0,dist:0,dev140:0};
+  if(u8.length<14) return R; const hs=u8[0]; if(String.fromCharCode(u8[8],u8[9],u8[10],u8[11])!=='.FIT') return R;
+  R.ok=true; const end=Math.min(u8.length, hs+dv.getUint32(4,true)); let p=hs; const defs={};
+  const rd=(q,sz,le)=> sz===1? u8[q] : sz===2? dv.getUint16(q,le) : sz===4? dv.getUint32(q,le) : null;
+  while(p<end){
+    const h=u8[p++]; let d;
+    if(h&0x80){ d=defs[(h>>5)&3]; if(!d) break; }
+    else if(h&0x40){ const le=u8[p+1]===0, gm=dv.getUint16(p+2,le), nf=u8[p+4]; p+=5; const f=[]; let size=0;
+      for(let i=0;i<nf;i++){ f.push([u8[p],u8[p+1]]); size+=u8[p+1]; p+=3; }
+      if(h&0x20){ const nd=u8[p++]; for(let i=0;i<nd;i++){ size+=u8[p+1]; p+=3; } }
+      defs[h&0x0F]={le,gm,f,size}; continue; }
+    else { d=defs[h&0x0F]; if(!d) break; }
+    if(p+d.size>u8.length) break;
+    R.msgs[d.gm]=(R.msgs[d.gm]||0)+1;
+    if(d.gm===20){ R.rec++; let q=p; for(const [n,sz] of d.f){ const v=rd(q,sz,d.le);
+        if(n===3&&sz===1&&v!==0xFF&&v>0) R.hr++; else if(n===0&&sz===4&&v!==0x7FFFFFFF) R.gps++; else if((n===2&&sz===2&&v!==0xFFFF)||(n===78&&sz===4&&v!==0xFFFFFFFF)) R.alt++; else if(n===5&&sz===4&&v!==0xFFFFFFFF) R.dist++; q+=sz; } R.alt=Math.min(R.alt,R.rec); }
+    else if(d.gm===23){ let q=p; const o={}; for(const [n,sz] of d.f){ o[n]=rd(q,sz,d.le); q+=sz; } R.dev.push(o); }
+    p+=d.size;
+  }
+  return R;
+}
+const ANT_TYPES={120:'cardio (ceinture ou capteur FC)',124:'capteur de foulée',121:'vitesse/cadence vélo',123:'vitesse vélo',122:'cadence vélo',11:'capteur de puissance',119:'température',16:'accessoire',17:'altimètre/baromètre'};
+const SRC_TYPES={0:'ANT',1:'ANT+',2:'Bluetooth',3:'Bluetooth LE',4:'Wi-Fi',5:'interne (montre)'};
+async function garminTest(){
+  const out=$('#gOut'), key=$('#gKey').value.trim(); out.style.display=''; $('#gCopy').style.display='none';
+  const L=[]; const log=t=>{ L.push(t); out.textContent=L.join('\n'); };
+  if(!key){ log('⚠️ Colle d\'abord ta clé API Garmin.'); return; }
+  try{ if($('#gKeep').checked){ localStorage.setItem('cairn_gkey',key); $('#gForget').style.display=''; } else localStorage.removeItem('cairn_gkey'); }catch(e){}
+  $('#gRun').disabled=true;
+  log(`RAPPORT TEST GARMIN – Cairn v2.4 β – ${new Date().toLocaleString('fr-FR')}`);
+  log(`Appareil : ${/iPhone|iPad/.test(navigator.userAgent)?'iPhone/iPad':/Android/.test(navigator.userAgent)?'Android':'ordinateur'} · ${matchMedia('(display-mode: standalone)').matches?'appli installée':'navigateur'}`);
+  try{
+    // 1. jeton
+    log('\n1) Échange de la clé contre un jeton…');
+    let r;
+    try{ r=await fetch(GHOST+'/personalapitoken-service/personal-api/personal-api-key/token',{method:'POST',headers:{'Authorization':'ApiKey '+key}}); }
+    catch(e){ log('❌ ACCÈS DIRECT BLOQUÉ : le navigateur refuse l\'appel (probablement CORS côté Garmin). → Il faudra un petit relais.\n   Détail : '+e.message); return; }
+    const raw=(await r.text()).trim();
+    if(!r.ok){ log(`❌ Garmin répond ${r.status} ${r.statusText} : ${r.status===401||r.status===403?'clé refusée ou expirée':'erreur'}.\n   Début de réponse : ${raw.slice(0,160).replace(key,'[clé]')}`); return; }
+    let tok=raw; if(raw.startsWith('{')){ try{ const j=JSON.parse(raw); tok=j.access_token||j.accessToken||j.token||''; }catch(e){} } tok=tok.replace(/^"|"$/g,'');
+    let exp=''; try{ const pl=JSON.parse(atob(tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); if(pl.exp) exp=' · expire le '+new Date(pl.exp*1000).toLocaleString('fr-FR'); }catch(e){}
+    log(`✅ Accès direct OK (réponse ${raw.startsWith('{')?'JSON':'texte'}, jeton de ${tok.length} caractères${exp})`);
+    const api=async(path)=>{ const x=await fetch(GHOST+path,{headers:{'Authorization':'Bearer '+tok}}); if(!x.ok) throw new Error(`${x.status} ${x.statusText} sur ${path.split('?')[0]}`); return x; };
+    // 2. dernières activités
+    log('\n2) Dernières activités…');
+    const list=await (await api('/activitylist-service/activities/search/activities?start=0&limit=20')).json();
+    const A=Array.isArray(list)? list : (list.activityList||list.activities||[]);
+    log(`✅ ${A.length} activités reçues (format ${Array.isArray(list)?'liste':'objet : '+Object.keys(list).slice(0,6).join(', ')})`);
+    const km=a=>a.distance!=null? (a.distance/1000).toFixed(1)+' km' : '?';
+    A.slice(0,6).forEach(a=>log(`   • ${String(a.startTimeLocal||'').slice(0,16)} · ${(a.activityType&&a.activityType.typeKey)||'?'} · ${km(a)} · D+ ${a.elevationGain!=null?Math.round(a.elevationGain):'?'} · FC ${a.averageHR!=null?Math.round(a.averageHR):'–'}/${a.maxHR!=null?Math.round(a.maxHR):'–'} · « ${String(a.activityName||'').slice(0,30)} »`));
+    if(A[0]){ const k=Object.keys(A[0]); log(`   Champs disponibles (${k.length}) : ${k.join(', ')}`);
+      const want=['averageHR','maxHR','vO2MaxValue','elevationGain','elevationLoss','movingDuration','elapsedDuration','deviceId','startLatitude','avgGradeAdjustedSpeed','aerobicTrainingEffect','activityTrainingLoad','lapCount','manufacturer'];
+      log('   Utiles pour Cairn : '+want.map(w=>`${w} ${A[0][w]!==undefined&&A[0][w]!==null?'✓':'✗'}`).join(' · ')); }
+    // 3. historique
+    log('\n3) Profondeur de l\'historique…');
+    const today=new Date(); const iso=d=>d.toISOString().slice(0,10);
+    for(const y of [1,3,5,8,12]){
+      const e=new Date(today); e.setFullYear(e.getFullYear()-y); const b=new Date(e); b.setDate(b.getDate()-60);
+      try{ const j=await (await api(`/activitylist-service/activities/search/activities?start=0&limit=5&startDate=${iso(b)}&endDate=${iso(e)}`)).json(); const n=(Array.isArray(j)?j:(j.activityList||[])).length;
+        log(`   il y a ${y} an${y>1?'s':''} (${iso(b)} → ${iso(e)}) : ${n? '✅ '+n+' activité'+(n>1?'s':'')+(n>=5?' ou plus':'') : 'aucune'}`); }
+      catch(e2){ log(`   il y a ${y} ans : ❌ ${e2.message}`); }
+    }
+    // 4. fichier FIT
+    log('\n4) Fichier .FIT de la dernière course à pied…');
+    const run=A.find(a=>/run/i.test((a.activityType&&a.activityType.typeKey)||''))||A[0];
+    if(!run){ log('   aucune activité à tester'); }
+    else{
+      log(`   activité ${String(run.startTimeLocal||'').slice(0,16)} « ${String(run.activityName||'').slice(0,30)} »`);
+      const zb=await (await api('/download-service/files/activity/'+run.activityId)).blob();
+      log(`   ✅ téléchargé : ${(zb.size/1024).toFixed(0)} Ko (${zb.type||'type inconnu'})`);
+      let fit=null, names=[];
+      try{ const z=await zipOpen(zb); names=[...z.entries.keys()]; const e=[...z.entries.values()].find(x=>/\.fit$/i.test(x.name))||[...z.entries.values()][0]; if(e) fit=await (await z.blob(e)).arrayBuffer(); }
+      catch(e3){ const b=await zb.arrayBuffer(); const u=new Uint8Array(b); if(String.fromCharCode(u[8],u[9],u[10],u[11])==='.FIT'){ fit=b; names=['(fichier .FIT direct)']; } else log('   ❌ ni zip ni .FIT lisible : '+e3.message); }
+      if(names.length) log('   contenu : '+names.join(', '));
+      if(fit){ const F=scanFIT(fit);
+        if(!F.ok) log('   ❌ fichier .FIT illisible');
+        else{
+          log(`   points enregistrés : ${F.rec} · avec FC ${F.hr} · GPS ${F.gps} · altitude ${F.alt} · distance ${F.dist}`);
+          const ext=F.dev.filter(d=>d[25]!==5 && d[25]!==undefined && d[25]!==0xFF);
+          log(`   appareils déclarés : ${F.dev.length} (${F.dev.map(d=>(d[1]===255||d[1]==null? 'appareil principal' : ANT_TYPES[d[1]]||('type '+d[1]))+' / '+(SRC_TYPES[d[25]]||'source '+(d[25]??'?'))).filter((x,i,a)=>a.indexOf(x)===i).join(' ; ')||'aucun'})`);
+          const strap=F.dev.some(d=>d[1]===120 && d[25]!==5);
+          log(`   ${strap? '❤️ CEINTURE CARDIO DÉTECTÉE sur cette sortie' : '⌚ pas de ceinture détectée (cardio poignet ou non déclaré)'}${ext.length&&!strap?' · capteurs externes : '+ext.length:''}`);
+          log(`   messages Garmin internes (VO2max…) : ${F.msgs[140]? '✅ présents ('+F.msgs[140]+')' : '✗ absents (retirés par l\'API ?)'} · messages : ${Object.keys(F.msgs).length} types`);
+        }
+      }
+    }
+    log('\n✔︎ Test terminé.');
+  }catch(e){ log('\n❌ Erreur : '+e.message); }
+  finally{ $('#gRun').disabled=false; $('#gCopy').style.display=''; }
 }
 
 /* ---------- import complet de l'archive (modèle) ---------- */
