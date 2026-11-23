@@ -149,7 +149,7 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
 </head>
 <body>
 <header>
-  <div><h1><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-4px;margin-right:6px"><ellipse cx="12" cy="19.5" rx="9" ry="3.2" fill="#52514e"/><ellipse cx="12" cy="13.6" rx="6.4" ry="2.8" fill="#7d7b75"/><ellipse cx="12" cy="8.6" rx="4.2" ry="2.3" fill="#a5a29b"/><ellipse cx="12" cy="4.4" rx="2.4" ry="1.7" fill="var(--accent)"/></svg>Cairn<span> · carnet de trail · v2.4 β2</span></h1><div class="sub" id="subtitle"></div></div>
+  <div><h1><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-4px;margin-right:6px"><ellipse cx="12" cy="19.5" rx="9" ry="3.2" fill="#52514e"/><ellipse cx="12" cy="13.6" rx="6.4" ry="2.8" fill="#7d7b75"/><ellipse cx="12" cy="8.6" rx="4.2" ry="2.3" fill="#a5a29b"/><ellipse cx="12" cy="4.4" rx="2.4" ry="1.7" fill="var(--accent)"/></svg>Cairn<span> · carnet de trail · v2.4</span></h1><div class="sub" id="subtitle"></div><div class="sub" id="gStat" style="font-size:11.5px"></div></div>
   <nav>
     <a href="#carte" data-v="carte"><span class="lg">1 · Terrain de jeu</span><span class="sm"><span class="ic">🗺️</span>Terrain</span></a>
     <a href="#performance" data-v="performance"><span class="lg">2 · Sous la frontale</span><span class="sm"><span class="ic">📈</span>Forme</span></a>
@@ -183,7 +183,13 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
     <button class="chip on" data-pp="0">Tout</button>
     <button class="chip" data-pp="3">3 ans</button>
     <button class="chip" data-pp="1">12 mois</button>
+    <span class="sub" style="margin-left:12px">Type :</span>
+    <button class="chip on" data-pk="all">Toutes</button>
+    <button class="chip" data-pk="course">Courses</button>
+    <button class="chip" data-pk="seance">Séances</button>
+    <button class="chip" data-pk="endurance">Endurance</button>
   </div>
+  <div class="sub" id="pkHint" style="margin:-4px 0 10px"></div>
   <div class="tiles" id="tiles"></div>
 
   <div class="card">
@@ -227,7 +233,7 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
     </div>
     <div class="sub" style="font-weight:600;margin:10px 0 4px">Points forts et points faibles par terrain</div>
     <div id="pTerr" class="plot" style="height:300px"></div>
-    <p class="note">Indice 100 = ton allure moyenne de la sortie, corrigée de la pente (modèle d'allure ajustée à la pente, proche de celui de Strava). Au-dessus de 100 : tu vas relativement plus vite sur ce terrain que sur le reste de tes sorties ; en dessous : terrain à travailler.</p>
+    <p class="note">Indice 100 = ta vitesse moyenne de la sortie, ramenée au plat avec une courbe de vitesse réaliste selon la pente (à effort égal, on va environ 15 % plus vite en descente à −10 %, mais moins vite dans les descentes très raides, et 2 à 4 fois moins vite en montée raide). La comparaison se fait à l'intérieur de chaque sortie, donc à effort comparable ; les sorties de récup sont exclues et le filtre « Type » s'applique. Au-dessus de 100 : tu vas relativement plus vite sur ce terrain que la moyenne des traileurs ; en dessous : terrain à travailler.</p>
   </div>
 
   <div class="card">
@@ -262,10 +268,12 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
     <div class="bar">
       <label class="f">FC max<input type="number" id="hrMax" value="191" style="width:80px"></label>
       <label class="f">FC repos<input type="number" id="hrRest" value="55" style="width:80px"></label>
+      <span id="hsWrap" style="display:none"><span class="sub">Cardio :</span> <button class="chip on" data-hs="all">Toutes les sorties</button><button class="chip" data-hs="strap">Ceinture seulement</button></span>
+      <span><span class="sub">Vitesse / FC :</span> <button class="chip on" data-hv="ke">en km-effort</button><button class="chip" data-hv="real">vitesse réelle</button></span>
     </div>
     <div class="grid2">
-      <div><div class="sub" style="font-weight:600;margin-bottom:4px">Efficacité cardiaque dans le temps</div><div id="pHrEff" class="plot" style="height:320px"></div>
-        <p class="note">Mètres-effort parcourus par battement de cœur (distance + D+/100, divisée par le nombre de battements). Une courbe qui monte = tu cours plus vite pour le même effort cardiaque, signe d'une meilleure endurance. Elle varie aussi avec la chaleur, la fatigue et le type de sortie.</p></div>
+      <div><div class="sub" style="font-weight:600;margin-bottom:4px">Vitesse / FC dans le temps (sorties d'endurance)</div><div id="pHrEff" class="plot" style="height:320px"></div>
+        <p class="note">Vitesse divisée par la FC, soit les mètres parcourus par battement de cœur (en km-effort : distance + D+/100 ; ou en vitesse réelle). Calculée uniquement sur les sorties d'endurance, régulières, pour comparer ce qui est comparable ; les sorties avec ceinture cardio sont en points pleins, celles au poignet en points clairs. Une courbe qui monte = tu cours plus vite pour le même effort cardiaque. Elle varie aussi avec la chaleur, la fatigue et le terrain.</p></div>
       <div><div class="sub" style="font-weight:600;margin-bottom:4px">Allure selon la FC</div><div id="pHrPace" class="plot" style="height:320px"></div>
         <p class="note">Chaque point est une sortie. Si les points récents (en orange) sont plus hauts que les anciens à FC égale, ta forme aérobie progresse.</p></div>
     </div>
@@ -305,6 +313,19 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
     <h2>2. Courses des 12 prochains mois (France)</h2>
     <p class="hint">621 formats de course (route et trail, métropole et outre-mer) relevés le 13/11/2026 dans les calendriers trails-de-france.fr, hdsports.org, Miles Republic, Planmapace et runrun.fr, plus les sites des organisateurs. <span class="badge ok">confirmée</span> = date annoncée ; <span class="badge tbc">à confirmer</span> = mois habituel, date 2027 pas encore publiée (placée au 15 du mois). D+ trail donnés par les calendriers ; « ≈ » = D+ route estimé. Distance « depuis chez toi » approximative (commune ou préfecture). Vérifie toujours sur le site de la course.</p>
     <div class="scroll"><table id="raceTable"></table></div>
+    <details style="margin-top:10px"><summary class="sub" style="cursor:pointer">➕ Ajouter une course qui manque à la liste</summary>
+      <div class="bar" style="margin-top:8px">
+        <label class="f">Nom<input type="text" id="myN" style="width:220px"></label>
+        <label class="f">Date<input type="date" id="myD"></label>
+        <label class="f">Distance (km)<input type="number" id="myK" step="0.1" style="width:90px"></label>
+        <label class="f">D+ (m)<input type="number" id="myP" step="10" style="width:90px"></label>
+        <label class="f">Ville<input type="text" id="myC" style="width:140px"></label>
+        <label class="f">Lien (facultatif)<input type="url" id="myU" style="width:200px"></label>
+        <button id="myAdd">Ajouter</button>
+      </div>
+      <div class="sub" id="myMsg"></div>
+      <p class="note">Les courses ajoutées sont enregistrées sur cet appareil et apparaissent toujours dans la liste (badge « perso »), quel que soit le format choisi.</p>
+    </details>
   </div>
 
   <div class="card">
@@ -333,6 +354,23 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
 <section class="view" id="v-accueil">
   <div class="card" style="max-width:860px;margin:10px auto">
     <h2>Bienvenue dans Cairn</h2>
+    <div class="card" id="gCard" style="margin:4px 0 14px;padding:12px 14px;background:#f1f6fb;border:1px solid #c9dcef">
+      <b>⌚ Garmin Connect</b> · <span id="gcState">non connecté</span>
+      <div class="sub" id="gcInfo" style="margin-top:4px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <button class="pri" id="gcSync" style="display:none">Synchroniser maintenant</button>
+        <button id="gcFull" style="display:none">Compléter l'historique</button>
+        <button id="gcStop" style="display:none">Arrêter</button>
+        <button id="gcSet">Réglages</button>
+      </div>
+      <div id="gcProg" style="display:none;margin-top:8px"><div class="prog"><i id="gcBar"></i></div><div class="sub" id="gcMsg"></div></div>
+      <div id="gcForm" style="display:none;margin-top:10px">
+        <label class="f" style="display:block">Adresse du relais<input type="url" id="gcRelay" autocomplete="off" spellcheck="false" placeholder="https://cairn-garmin.….workers.dev" style="width:100%;margin-top:4px;padding:8px;font:inherit;border:1px solid #d6d3cc;border-radius:8px"></label>
+        <label class="f" style="display:block;margin-top:8px">Clé API personnelle Garmin<input type="password" id="gcKey" autocomplete="off" spellcheck="false" style="width:100%;margin-top:4px;padding:8px;font:inherit;border:1px solid #d6d3cc;border-radius:8px"></label>
+        <p class="note">La clé est enregistrée <b>sur cet appareil seulement</b> (c'est ce qui permet la synchro automatique à chaque ouverture) et n'est envoyée qu'à Garmin, via ton relais. Elle expire à la date choisie dans Garmin Connect : il suffira d'en coller une nouvelle. Comment créer la clé et le relais : <a href="#garmin">page de test</a>.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="pri" id="gcSave">Enregistrer et synchroniser</button><button id="gcForget">Déconnecter Garmin</button></div>
+      </div>
+    </div>
     <div class="card" id="wMajWrap" style="display:none;margin:4px 0 14px;padding:12px 14px;background:#eef6f2;border:1px solid #b9ddd0">
       <b>Mise à jour rapide</b> · Tu as reçu un fichier <b>cairn_maj_….json</b> ? Il ajoute tes dernières sorties sans réimporter toute l'archive.
       <div style="margin-top:8px"><button class="pri" id="wMajPick">Ajouter mes dernières sorties</button><input type="file" id="wMajFile" accept=".json,application/json,text/plain" hidden></div>
@@ -402,6 +440,7 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
 <div class="lb" id="lb"><button class="x" id="lbX" aria-label="Fermer">✕</button><button class="nav p" id="lbP" aria-label="Précédente">‹</button><button class="nav n" id="lbN" aria-label="Suivante">›</button>
   <img id="lbImg" alt=""><div class="info" id="lbInfo"></div></div>
 </main>
+<div class="toast" id="toast2"><span></span><button></button></div>
 <div class="toast" id="toast"><span>Nouvelle version de Cairn disponible</span><button id="reload">Mettre à jour</button></div>
 
 <script>
@@ -422,11 +461,13 @@ let runs = [];
 
 
 /* ---------- routing ---------- */
+let _routed=0;
 const inited = {};
 function route(){
   const v = (location.hash||'#carte').slice(1);
   if(v==='garmin'){ showGarmin(); return; }
   if(!DATA.acts.length || v==='accueil'){ showWelcome(); return; }
+  _routed++;
   const name = ['carte','performance','preparation','souvenirs'].includes(v)? v : 'carte';
   $$('.view').forEach(e=>e.classList.toggle('on', e.id==='v-'+name));
   $$('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===name));
@@ -652,8 +693,16 @@ function showOnMap(id){
 function applyHr(map){ if(!map) return 0; let n=0; DATA.acts.forEach(a=>{ const h=map[a.i]; if(h && !a.hr){ a.hr=h.hr; if(h.hrm) a.hrm=h.hrm; n++; } }); return n; }
 async function boot(){
   let st=null; try{ st=await IDB.get('kv','data'); }catch(e){}
-  if(st && st.acts && st.acts.length){ DATA=st; setupData(); try{ applyHr(await IDB.get('kv','hrArchive')); }catch(e){} }
+  let G=null; try{ G=await gLoad(); }catch(e){}
+  const nG=G&&G.acts? Object.keys(G.acts).length : 0;
+  if(st && st.acts && st.acts.length) DATA=st;
+  else if(nG) DATA={acts:[],be:[],terr:{},gen:localISO(new Date()).slice(0,10)};
+  if(DATA.acts.length || nG){
+    try{ applyGarmin(G); }catch(e){ console.log('garmin',e); }
+    if(DATA.acts.length){ setupData(); try{ applyHr(await IDB.get('kv','hrArchive')); }catch(e){} }
+  }
   route();
+  setTimeout(autoSync, 1200);
 }
 function setupData(){
   TODAY = new Date(DATA.gen+'T12:00:00');
@@ -662,7 +711,8 @@ function setupData(){
   if(DATA.home) HOME = DATA.home;
   applyRaceEdits();
   const first = DATA.acts.length? DATA.acts[0].d : DATA.gen;
-  $('#subtitle').textContent = `${DATA.acts.length} activités Strava (${fmtDate(first)} → ${fmtDate(DATA.gen)})`;
+  const nG=DATA.acts.filter(a=>a._g).length, nS=DATA.acts.length-nG;
+  $('#subtitle').textContent = `${nS? nS+' activités Strava':''}${nS&&nG?' + ':''}${nG? nG+' Garmin':''} (${fmtDate(first)} → ${fmtDate(DATA.gen)})`;
 }
 let _wInit=false;
 function showWelcome(){
@@ -670,7 +720,9 @@ function showWelcome(){
   $$('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v==='accueil'));
   $('#wBackWrap').style.display = DATA.acts.length? '' : 'none';
   $('#wMajWrap').style.display = DATA.acts.length? '' : 'none';
+  gcRender();
   if(_wInit) return; _wInit=true;
+  gcBind();
   const mp=$('#wMajFile'); $('#wMajPick').onclick=()=>mp.click();
   mp.onchange=()=>{ if(mp.files[0]) runMaj(mp.files[0]); };
   const pick=$('#wFile'), dz=$('#wDrop');
@@ -777,7 +829,7 @@ async function garminTest(){
   try{ relay? localStorage.setItem('cairn_grelay',relay) : localStorage.removeItem('cairn_grelay'); }catch(e){}
   GHOST = relay || 'https://personal.connectapi.garmin.com';
   $('#gRun').disabled=true;
-  log(`RAPPORT TEST GARMIN – Cairn v2.4 β2 – ${new Date().toLocaleString('fr-FR')}`);
+  log(`RAPPORT TEST GARMIN – Cairn v2.4 – ${new Date().toLocaleString('fr-FR')}`);
   log(`Appareil : ${/iPhone|iPad/.test(navigator.userAgent)?'iPhone/iPad':/Android/.test(navigator.userAgent)?'Android':'ordinateur'} · ${matchMedia('(display-mode: standalone)').matches?'appli installée':'navigateur'}`);
   try{
     if(relay){ log('\n0) Relais : '+relay.replace(/^https:\/\//,'').replace(/^[^.]+/,'…'));
@@ -841,6 +893,169 @@ async function garminTest(){
   }catch(e){ log('\n❌ Erreur : '+e.message); }
   finally{ $('#gRun').disabled=false; $('#gCopy').style.display=''; }
 }
+
+/* ---------- synchro Garmin (API personnelle, via le relais) ---------- */
+const GTYPE={running:'Run',street_running:'Run',track_running:'Run',treadmill_running:'Run',indoor_running:'Run',obstacle_run:'TrailRun',virtual_run:'VirtualRun',trail_running:'TrailRun',ultra_run:'TrailRun',
+  hiking:'Hike',mountaineering:'Hike',walking:'Walk',casual_walking:'Walk',speed_walking:'Walk',cycling:'Ride',road_biking:'Ride',gravel_cycling:'Ride',cyclocross:'Ride',mountain_biking:'MountainBikeRide',
+  e_bike_fitness:'EBikeRide',e_bike_mountain:'EMountainBikeRide',indoor_cycling:'VirtualRide',virtual_ride:'VirtualRide',lap_swimming:'Swim',open_water_swimming:'Swim',
+  resort_skiing_snowboarding_ws:'AlpineSki',resort_skiing:'AlpineSki',resort_snowboarding:'AlpineSki',backcountry_skiing_snowboarding_ws:'BackcountrySki',backcountry_skiing:'BackcountrySki',skate_skiing_ws:'NordicSki',cross_country_skiing_ws:'NordicSki',
+  strength_training:'WeightTraining',indoor_cardio:'Workout',hiit:'Workout',fitness_equipment:'Workout',yoga:'Yoga',pilates:'Yoga',rock_climbing:'RockClimbing',bouldering:'RockClimbing',indoor_climbing:'RockClimbing',
+  rowing:'Rowing',indoor_rowing:'Rowing',kayaking_v2:'Kayaking',kayaking:'Kayaking',stand_up_paddleboarding_v2:'StandUpPaddling',stand_up_paddleboarding:'StandUpPaddling',paddelball:'Padel',padel:'Padel',tennis:'Tennis',soccer:'Soccer'};
+const gCfg=()=>{ let r='',k=''; try{ r=localStorage.getItem('cairn_grelay')||''; k=localStorage.getItem('cairn_gkey')||''; }catch(e){} return {relay:r.trim().replace(/\/+$/,''), key:k.trim()}; };
+let GSTORE=null, _gTok=null, _gBusy=false, _gStop=false;
+async function gLoad(){ if(GSTORE) return GSTORE; try{ GSTORE=await IDB.get('kv','garmin'); }catch(e){} if(!GSTORE||!GSTORE.acts) GSTORE={acts:{},last:null}; return GSTORE; }
+async function gSave(){ try{ await IDB.put('kv',GSTORE,'garmin'); }catch(e){} }
+async function gToken(c){
+  const tag=c.key.slice(-6)+c.relay;
+  if(_gTok && _gTok.exp>Date.now()+3600e3 && _gTok.k===tag) return _gTok.t;
+  try{ const x=JSON.parse(localStorage.getItem('cairn_gtok')||'null'); if(x && x.exp>Date.now()+3600e3 && x.k===tag){ _gTok=x; return x.t; } }catch(e){}
+  let r; try{ r=await fetch(c.relay+'/personalapitoken-service/personal-api/personal-api-key/token',{method:'POST',headers:{Authorization:'ApiKey '+c.key}}); }catch(e){ throw new Error('relais injoignable (connexion internet ? adresse du relais ?)'); }
+  const raw=(await r.text()).trim();
+  if(r.status===401||r.status===403) throw new Error('clé Garmin refusée ou expirée : crée une nouvelle clé dans Garmin Connect et colle-la dans les réglages');
+  if(!r.ok) throw new Error('Garmin répond '+r.status);
+  let t=raw; if(raw.startsWith('{')){ try{ const j=JSON.parse(raw); t=j.access_token||j.accessToken||j.token||''; }catch(e){} } t=t.replace(/^"|"$/g,'');
+  let exp=Date.now()+23*3600e3; try{ const pl=JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); if(pl.exp) exp=pl.exp*1000; }catch(e){}
+  _gTok={t,exp,k:tag}; try{ localStorage.setItem('cairn_gtok',JSON.stringify(_gTok)); }catch(e){} return t;
+}
+async function gGet(c,path,asBlob){
+  for(let tr=0;tr<2;tr++){
+    const t=await gToken(c); let r;
+    try{ r=await fetch(c.relay+path,{headers:{Authorization:'Bearer '+t}}); }catch(e){ throw new Error('relais injoignable (connexion internet ?)'); }
+    if(r.status===401 && tr===0){ _gTok=null; try{ localStorage.removeItem('cairn_gtok'); }catch(e){} continue; }
+    if(r.status===429){ const e=new Error('Garmin limite le nombre de demandes : la suite reprendra plus tard (ce qui est fait est gardé)'); e.rate=1; throw e; }
+    if(!r.ok) throw new Error('Garmin répond '+r.status);
+    return asBlob? await r.blob() : await r.json();
+  }
+  throw new Error('accès Garmin refusé');
+}
+const gDate = x => String(x||'').replace(' ','T').slice(0,16);
+function gRec(x, old){
+  const tk=(x.activityType&&x.activityType.typeKey)||'';
+  const sp=GTYPE[tk] || (tk? tk.replace(/(^|_)(\w)/g,(m,a,b)=>b.toUpperCase()) : 'Autre');
+  const r=Object.assign({}, old||{}, {gi:String(x.activityId), n:String(x.activityName||sportFr(sp)), s:sp, d:gDate(x.startTimeLocal), km:+((x.distance||0)/1000).toFixed(3), dp:Math.round(x.elevationGain||0),
+    mt:Math.round(x.movingDuration||x.duration||0), et:Math.round(x.elapsedDuration||x.duration||0)});
+  if(x.averageHR>40) r.hr=+(+x.averageHR).toFixed(1); if(x.maxHR>40) r.hrm=Math.round(x.maxHR);
+  const z=[1,2,3,4,5].map(i=>Math.round(x['hrTimeInZone_'+i]||0)); if(z.some(v=>v>0)) r.z=z;
+  if(x.aerobicTrainingEffect!=null) r.te=+(+x.aerobicTrainingEffect).toFixed(1);
+  if(x.anaerobicTrainingEffect!=null) r.ta=+(+x.anaerobicTrainingEffect).toFixed(1);
+  if(x.activityTrainingLoad!=null) r.tl=Math.round(x.activityTrainingLoad);
+  if(x.startLatitude!=null) r.gps=1; if(x.locationName) r.loc=String(x.locationName);
+  if(x.manualActivity||x.isManualActivity) r.man=1;
+  return r;
+}
+const tMin = d => Math.round(Date.parse(String(d).slice(0,16)+':00Z')/60000);
+function gMatchIndex(acts){ const M=new Map(); acts.forEach(a=>{ if(a._g) return; const m=tMin(a.d); for(let k=-3;k<=3;k++){ const L=M.get(m+k); if(L) L.push(a); else M.set(m+k,[a]); } }); return M; }
+function gFind(M, r){ const L=M.get(tMin(r.d)); if(!L) return null; let best=null,bd=1e9;
+  L.forEach(a=>{ const dk=Math.abs((a.km||0)-(r.km||0)); if(dk<=Math.max(0.6,0.15*Math.max(a.km||0,r.km||0)) && dk<bd){ bd=dk; best=a; } }); return best; }
+async function gFit(c, r, M){
+  const zb=await gGet(c,'/download-service/files/activity/'+r.gi,true);
+  let buf=null;
+  try{ const z=await zipOpen(zb); const e=[...z.entries.values()].find(x=>/\.fit$/i.test(x.name)); if(e) buf=await (await z.blob(e)).arrayBuffer(); }
+  catch(e){ const b=await zb.arrayBuffer(); const u=new Uint8Array(b); if(u.length>12 && String.fromCharCode(u[8],u[9],u[10],u[11])==='.FIT') buf=b; }
+  r.fit=1; if(!buf) return;
+  const F=scanFIT(buf);
+  if(F.dev.some(d=>d[1]===120 && d[25]!==5 && d[25]!==undefined && d[25]!==0xFF)) r.st=1; else if(F.hr>0) r.st=0;
+  const S=parseFIT(buf), pts=S.filter(x=>Math.abs(x[1])>0.0001||Math.abs(x[2])>0.0001).map(x=>[x[1],x[2]]);
+  if(pts.length>=2){ const m=gFind(M,r); if(!(m&&m.p)) r.p=encPoly(simplify(pts,0.00007)); }
+  if((r.s==='Run'||r.s==='TrailRun') && r.dp>=100 && r.km>=3 && r.dp/r.km>=20){ const tb=terrBins(S); if(tb) r.terr=tb; }
+}
+async function syncGarmin(opt={}){
+  const c=gCfg(); if(!c.relay||!c.key) throw new Error('Garmin n\'est pas configuré');
+  if(_gBusy) return {n:0,busy:1}; _gBusy=true; _gStop=false;
+  const prog=opt.prog||(()=>{});
+  try{
+    const G=await gLoad(); let base=null; try{ base=await IDB.get('kv','data'); }catch(e){}
+    const M=gMatchIndex((base&&base.acts)||[]);
+    const iso=d=>localISO(d).slice(0,10), now=new Date();
+    const from = opt.full? null : (G.last? new Date(+new Date(G.last)-4*864e5) : new Date(+now-120*864e5));
+    let nNew=0, start=0; const seen=new Set();
+    while(!_gStop){
+      prog(0.02, `Liste des activités Garmin… ${start? start+' lues':''}`);
+      const j=await gGet(c,'/activitylist-service/activities/search/activities?start='+start+'&limit=100'+(from?`&startDate=${iso(from)}&endDate=${iso(new Date(+now+864e5))}`:''));
+      const L=Array.isArray(j)? j : (j.activityList||j.activities||[]);
+      L.forEach(x=>{ if(!x||!x.activityId) return; const id=String(x.activityId), old=G.acts[id]; if(!old) nNew++; G.acts[id]=gRec(x,old); seen.add(id); });
+      if(L.length<100 || start>30000) break; start+=L.length;
+    }
+    const isRun=r=>r.s==='Run'||r.s==='TrailRun';
+    const need=Object.values(G.acts).filter(r=>!r.fit && !r.man && (opt.full? isRun(r) : seen.has(r.gi) && (isRun(r) || (r.gps && !((gFind(M,r)||{}).p))))).sort((a,b)=>b.d.localeCompare(a.d));
+    let k=0, nFit=0;
+    for(const r of need){
+      if(_gStop) break;
+      prog(0.05+0.93*k/need.length, `Fichiers détaillés : ${k} / ${need.length}${opt.full?' (tu peux arrêter et reprendre plus tard)':''}`);
+      try{ await gFit(c,r,M); nFit++; }catch(e){ if(e.rate){ await gSave(); throw e; } r.fit=1; r.fitErr=1; }
+      k++; if(k%15===0) await gSave();
+      await new Promise(res=>setTimeout(res,200));
+    }
+    if(!_gStop){ G.last=now.toISOString(); if(opt.full) G.hist=now.toISOString(); }
+    G.lastTry=Date.now(); await gSave(); prog(1,'');
+    return {n:nNew, fit:nFit, stopped:_gStop, total:Object.keys(G.acts).length};
+  } finally { _gBusy=false; }
+}
+function applyGarmin(G){
+  if(!G||!G.acts) return 0; const M=gMatchIndex(DATA.acts); let n=0; DATA.terr=DATA.terr||{};
+  Object.values(G.acts).forEach(r=>{
+    if(!r.d||!r.s) return;
+    let a=gFind(M,r);
+    if(a){ a.gi=r.gi; if(!(a.hr>0) && r.hr){ a.hr=r.hr; if(r.hrm) a.hrm=r.hrm; } }
+    else { a={i:'g'+r.gi, gi:r.gi, n:r.n, s:r.s, d:r.d, km:r.km, dp:r.dp, mt:r.mt, et:r.et||r.mt, loc:r.loc||'', _g:1};
+      if(r.hr) a.hr=r.hr; if(r.hrm) a.hrm=r.hrm;
+      if((a.s==='Run'||a.s==='TrailRun') && a.km>0 && a.mt>0){ a.ke=+(a.km+a.dp/100).toFixed(2); const v=vdot(a.ke*1000,a.mt); if(a.km>=3&&v>=20&&v<=85) a.vd=+v.toFixed(1); }
+      DATA.acts.push(a); n++; }
+    if(r.st!==undefined) a.st=r.st; if(r.z) a.z=r.z; if(r.te!=null) a.te=r.te; if(r.ta!=null) a.ta=r.ta; if(r.tl!=null) a.tl=r.tl;
+    if(!a.p && r.p) a.p=r.p;
+    if(r.terr && !DATA.terr[a.i]) DATA.terr[a.i]=r.terr;
+  });
+  if(n) DATA.acts.sort((x,y)=>x.d.localeCompare(y.d));
+  const lastD=DATA.acts.length? DATA.acts[DATA.acts.length-1].d.slice(0,10) : '', gl=G.last? localISO(new Date(G.last)).slice(0,10) : '';
+  DATA.gen=[DATA.gen||'', lastD, gl].sort().pop();
+  if(n) DATA.be=computeBE(DATA.acts);
+  return n;
+}
+function gStatus(t){ const e=document.getElementById('gStat'); if(e) e.textContent=t||''; }
+function toastMsg(txt, btn, fn){ const t=$('#toast2'); t.querySelector('span').textContent=txt; const b=t.querySelector('button');
+  if(btn){ b.style.display=''; b.textContent=btn; b.onclick=()=>{ t.style.display='none'; fn(); }; } else b.style.display='none';
+  t.style.display='flex'; clearTimeout(toastMsg._t); toastMsg._t=setTimeout(()=>t.style.display='none', btn? 12000 : 4000); }
+const _bootT=Date.now();
+async function autoSync(){
+  const c=gCfg(); if(!c.relay||!c.key||!navigator.onLine) return;
+  const G=await gLoad(); if(G.lastTry && Date.now()-G.lastTry<15*60e3){ if(G.last) gStatus('⌚ Garmin synchronisé '+ago(G.last)); return; }
+  gStatus('⌚ Synchro Garmin…');
+  try{ const r=await syncGarmin({});
+    gStatus('⌚ Garmin synchronisé à l\'instant');
+    if(r.n||r.fit){ const m=`Garmin : ${r.n} nouvelle${r.n>1?'s':''} activité${r.n>1?'s':''}${r.fit? `, ${r.fit} fichier${r.fit>1?'s':''} détaillé${r.fit>1?'s':''}`:''}`;
+      if(Date.now()-_bootT<15000 && _routed<=1 && !document.querySelector('#v-garmin.on')){ toastMsg(m+' — mise à jour…'); setTimeout(()=>location.reload(),1500); }
+      else toastMsg(m, 'Afficher', ()=>location.reload()); }
+  }catch(e){ gStatus('⚠️ Garmin : '+e.message); }
+}
+function ago(iso){ const m=Math.round((Date.now()-new Date(iso))/60000); return m<2? 'à l\'instant' : m<60? `il y a ${m} min` : m<1440? `il y a ${Math.round(m/60)} h` : `le ${new Date(iso).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}`; }
+async function gcRender(){
+  const c=gCfg(), G=await gLoad(), A=Object.values(G.acts), R=A.filter(r=>r.s==='Run'||r.s==='TrailRun'), on=!!(c.relay&&c.key);
+  $('#gcState').innerHTML = on? '<b style="color:#0b7a55">connecté</b>' : 'non connecté';
+  $('#gcInfo').innerHTML = on? (A.length? `${A.length} activités Garmin · dernière synchro ${G.last? ago(G.last):'–'} · ${R.filter(r=>r.fit&&!r.fitErr).length} / ${R.length} courses avec fichier détaillé, dont ${R.filter(r=>r.st===1).length} avec ceinture cardio.${G.hist?'':' <b>Historique pas encore complété</b> : appuie sur « Compléter l\'historique » (une fois, quelques minutes).'}` : 'Aucune synchro pour l\'instant : appuie sur « Synchroniser maintenant ».')
+    : 'Mets à jour Cairn automatiquement depuis ta montre Garmin : nouvelles sorties, cardio, ceinture ou poignet, profils de pente. Il faut une clé API personnelle Garmin et ton relais : ouvre « Réglages ».';
+  $('#gcSync').style.display=on&&!_gBusy?'':'none'; $('#gcFull').style.display=on&&!_gBusy?'':'none'; $('#gcStop').style.display=_gBusy?'':'none';
+}
+async function gcRun(full){
+  const P=$('#gcProg'), bar=$('#gcBar'), msg=$('#gcMsg'); P.style.display='';
+  const prog=(f,m)=>{ bar.style.width=Math.round(f*100)+'%'; if(m) msg.textContent=m; };
+  $('#gcSync').style.display='none'; $('#gcFull').style.display='none'; $('#gcStop').style.display='';
+  try{ const r=await syncGarmin({full,prog});
+    if(r.busy){ msg.textContent='Une synchro est déjà en cours…'; return; }
+    msg.innerHTML=`${r.stopped?'Arrêté. ':'Terminé : '}${r.n} nouvelle${r.n>1?'s':''} activité${r.n>1?'s':''}, ${r.fit} fichier${r.fit>1?'s':''} détaillé${r.fit>1?'s':''} (${r.total} activités Garmin en tout).${r.n||r.fit?' Rechargement…':''}`;
+    if(r.n||r.fit) setTimeout(()=>{ location.hash='#performance'; location.reload(); },1800);
+  }catch(e){ msg.innerHTML='<b style="color:#c0362c">'+e.message+'</b>'; }
+  finally{ gcRender(); }
+}
+function gcBind(){
+  $('#gcSync').onclick=()=>gcRun(false); $('#gcFull').onclick=()=>gcRun(true); $('#gcStop').onclick=()=>{ _gStop=true; $('#gcMsg').textContent='Arrêt après le fichier en cours…'; };
+  $('#gcSet').onclick=()=>{ const f=$('#gcForm'), c=gCfg(); f.style.display=f.style.display==='none'?'':'none'; $('#gcRelay').value=c.relay; $('#gcKey').value=c.key; };
+  $('#gcSave').onclick=()=>{ const r=$('#gcRelay').value.trim().replace(/\/+$/,''), k=$('#gcKey').value.trim();
+    if(!/^https:\/\/[^\s/]+/.test(r)){ alertMsg('L\'adresse du relais doit commencer par https://'); return; } if(k.length<10){ alertMsg('Colle ta clé API Garmin.'); return; }
+    try{ localStorage.setItem('cairn_grelay',r); localStorage.setItem('cairn_gkey',k); localStorage.removeItem('cairn_gtok'); }catch(e){} _gTok=null;
+    $('#gcForm').style.display='none'; gcRender(); gcRun(false); };
+  $('#gcForget').onclick=()=>{ try{ localStorage.removeItem('cairn_gkey'); localStorage.removeItem('cairn_gtok'); }catch(e){} _gTok=null; $('#gcKey').value=''; $('#gcForm').style.display='none'; gStatus(''); gcRender(); };
+}
+function alertMsg(t){ $('#gcMsg').innerHTML='<b style="color:#c0362c">'+t+'</b>'; $('#gcProg').style.display=''; $('#gcBar').style.width='0'; }
 
 /* ---------- import complet de l'archive (modèle) ---------- */
 const TYPE_MAP={courseapied:'Run',course:'Run',run:'Run',trailrun:'TrailRun',courseensentier:'TrailRun',trail:'TrailRun',velo:'Ride',ride:'Ride',sortieavelo:'Ride',veloelectrique:'EBikeRide',ebikeride:'EBikeRide',velovirtuel:'VirtualRide',virtualride:'VirtualRide',vtt:'MountainBikeRide',mountainbikeride:'MountainBikeRide',vttelectrique:'EMountainBikeRide',emountainbikeride:'EMountainBikeRide',randonnee:'Hike',hike:'Hike',marche:'Walk',walk:'Walk',natation:'Swim',swim:'Swim',skialpin:'AlpineSki',alpineski:'AlpineSki',skiderandonnee:'BackcountrySki',backcountryski:'BackcountrySki',skidefond:'NordicSki',nordicski:'NordicSki',entrainementauxpoids:'WeightTraining',weighttraining:'WeightTraining',entrainement:'Workout',workout:'Workout',crossfit:'Crossfit',yoga:'Yoga',escalade:'RockClimbing',rockclimbing:'RockClimbing',aviron:'Rowing',rowing:'Rowing',football:'Soccer',soccer:'Soccer',kayak:'Kayaking',kayaking:'Kayaking',voile:'Sail',sail:'Sail',standuppaddle:'StandUpPaddling',standuppaddling:'StandUpPaddling',courseapiedvirtuelle:'VirtualRun',virtualrun:'VirtualRun'};
@@ -967,10 +1182,14 @@ const gapK = g => { g=Math.max(-35,Math.min(35,g)); return 0.98462+0.030266*g+0.
 const TCLASS=[['Descente raide','< −15 %',g=>g<=-15],['Descente','−15 à −5 %',g=>g>-15&&g<=-5],['Plat / roulant','−5 à +5 %',g=>g>-5&&g<5],['Montée','+5 à +15 %',g=>g>=5&&g<15],['Montée raide','> +15 %',g=>g>=15]];
 const ageD = a => (TODAY-new Date(a.d))/864e5;
 const runTime = a => (a.rc||a.bug)? a.et : a.mt;
-function terrActs(from,to){ return DATA.acts.filter(a=>TERR[a.i] && (a.s==='Run'||a.s==='TrailRun') && ageD(a)>=from && ageD(a)<to); }
+function terrActs(from,to,useK=true){ return DATA.acts.filter(a=>TERR[a.i] && (a.s==='Run'||a.s==='TrailRun') && ageD(a)>=from && ageD(a)<to && (useK && pk!=='all'? kindOf(a)===pk : kindOf(a)!=='recup')); }
+// vitesse relative selon la pente, à effort égal (1 = plat) : plus vite en descente modérée, moins vite en descente raide, beaucoup moins vite en montée
+const RREF=[[-40,0.62],[-35,0.70],[-30,0.80],[-25,0.92],[-20,1.04],[-15,1.13],[-10,1.17],[-5,1.10],[0,1],[5,0.80],[10,0.63],[15,0.51],[20,0.42],[25,0.36],[30,0.31],[35,0.27],[40,0.24]];
+const relV = g => { g=Math.max(-40,Math.min(40,g)); for(let i=1;i<RREF.length;i++){ if(g<=RREF[i][0]){ const [g0,v0]=RREF[i-1],[g1,v1]=RREF[i]; return v0+(v1-v0)*(g-g0)/(g1-g0); } } return RREF[RREF.length-1][1]; };
+const slopeCost = g => 1/relV(g);
 function gradeProfile(acts){ const B={}; acts.forEach(a=>TERR[a.i].forEach(([g,dd,t,z])=>{ const b=B[g]||(B[g]={d:0,t:0,z:0}); b.d+=dd; b.t+=t; b.z+=z; })); return B; }
-function terrRatio(L, cls){ let ge=0,tt=0; L.forEach(([g,dd,t])=>{ ge+=dd*gapK(g); tt+=t; }); if(!tt) return null; const ref=ge/tt;
-  let e=0,t=0; L.forEach(([g,dd,tm])=>{ if(cls[2](g)){ e+=dd*gapK(g); t+=tm; } }); return t>=90? {r:e/t/ref, t} : null; }
+function terrRatio(L, cls){ let ge=0,tt=0; L.forEach(([g,dd,t])=>{ ge+=dd*slopeCost(g); tt+=t; }); if(!tt) return null; const ref=ge/tt;
+  let e=0,t=0; L.forEach(([g,dd,tm])=>{ if(cls[2](g)){ e+=dd*slopeCost(g); t+=tm; } }); return t>=90? {r:e/t/ref, t} : null; }
 function terrRatios(acts){ return TCLASS.map(c=>{ let s=0,w=0; acts.forEach(a=>{ const x=terrRatio(TERR[a.i],c); if(x){ s+=x.r*x.t; w+=x.t; } }); return w? s/w*100 : NaN; }); }
 const climbVam = a => { let z=0,t=0; (TERR[a.i]||[]).forEach(([g,dd,tm,dz])=>{ if(g>=10){ z+=dz; t+=tm; } }); return t>=300? z/t*3600 : NaN; };
 function rollMedian(xs, ys, days){ return xs.map((x,i)=>{ const t=new Date(x); const w=[]; xs.forEach((y,j)=>{ const g=(t-new Date(y))/864e5; if(g>=0&&g<days && !isNaN(ys[j])) w.push(ys[j]); }); return w.length>=3? q(w,.5):null; }); }
@@ -986,7 +1205,7 @@ function raceCurve(ke){ // temps prévu d'après les courses passées, ajusté �
   return wt>0? Math.exp(ws/wt) : NaN;
 }
 function renderKeT(){
-  const R=DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && (pt==='all'||a.s===pt) && (!pp||daysAgo(a.d,365*pp)) && a.km>=1 && runTime(a)>300);
+  const R=DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && ptOK(a) && (!pp||daysAgo(a.d,365*pp)) && a.km>=1 && runTime(a)>300);
   const keOf=a=>a.km+a.dp/100;
   const norm=R.filter(a=>!a.rc), rc=R.filter(a=>a.rc);
   const V=currentVdot(), kx=[]; for(let k=3;k<=130;k*=1.08) kx.push(k);
@@ -1087,7 +1306,7 @@ function bindRaceEdit(){
 /* ---------- FC : allure à FC égale, FC selon durée ---------- */
 const linfit = (X,Y) => { const n=X.length; if(n<3) return null; const mx=X.reduce((s,x)=>s+x,0)/n, my=Y.reduce((s,y)=>s+y,0)/n; let sxy=0,sxx=0; X.forEach((x,i)=>{ sxy+=(x-mx)*(Y[i]-my); sxx+=(x-mx)**2; }); if(!sxx) return null; const b=sxy/sxx; return {a:my-b*mx, b, f:x=>my-b*mx+b*x}; };
 const hrPace = a => a.mt/(a.km+a.dp/100);   // s par km-effort
-function hrRuns(){ return DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && (pt==='all'||a.s===pt) && a.hr && hrOK(a) && !a.bug).sort((a,b)=>a.d.localeCompare(b.d)); }
+function hrRuns(){ return DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && ptOK(a) && (hs==='all'||a.st===1) && a.hr && hrOK(a) && !a.bug).sort((a,b)=>a.d.localeCompare(b.d)); }
 function renderHrTrend(){
   const all=hrRuns(); if(all.length<12){ $('#hrTrendDiag').textContent=''; Plotly.react('pHrTrend',[],{...PL},CFG); return; }
   const HREF=Math.round(q(all.map(a=>a.hr),.5)/5)*5;
@@ -1125,7 +1344,7 @@ function hrEnvelope(){
   return HRENV={pts,f,at:h=> f? f.f(Math.log(Math.max(.25,h))) : NaN};
 }
 function renderHrDur(){
-  const L=DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && (pt==='all'||a.s===pt) && a.hr>100 && a.hr<210 && runTime(a)>=600 && (!pp||daysAgo(a.d,365*pp)));
+  const L=DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && ptOK(a) && (hs==='all'||a.st===1) && a.hr>100 && a.hr<210 && runTime(a)>=600 && (!pp||daysAgo(a.d,365*pp)));
   const env=hrEnvelope(), norm=L.filter(a=>!a.rc), rc=L.filter(a=>a.rc), hx=[]; for(let h=.25;h<=14;h*=1.15) hx.push(h);
   Plotly.react('pHrDur',[
     {type:'scatter',mode:'markers',name:'Sorties',x:norm.map(a=>runTime(a)/3600),y:norm.map(a=>a.hr),customdata:norm.map(a=>[a.n,fmtDate(a.d),fmtH(runTime(a))]),marker:{size:7,color:'#2a78d6',opacity:.4},hovertemplate:'<b>%{customdata[0]}</b><br>%{customdata[1]} · %{customdata[2]}<br>FC %{y:.0f}<extra></extra>'},
@@ -1225,7 +1444,7 @@ function vFormat(){
     `Tu performes le mieux sur les sorties de <b>${km} km-effort</b> (km + D+/100 : par exemple ${Math.round(BINS[xs[b]])} km sur le plat, ou ${Math.round(BINS[xs[b]]*0.75)} km avec ${Math.round(BINS[xs[b]]*25)} m D+). Le format le moins favorable est ${binLabel(xs[w])} km-effort (${(ys[b]-ys[w]).toFixed(1)} points de moins).`, 'good');
 }
 function vVo2(){
-  const R=runs.filter(a=>pt==='all'||a.s===pt); if(!R.length) return verdict('pVo2');
+  const R=runs.filter(ptOK); if(!R.length) return verdict('pVo2');
   const V=currentVdot(); let best=0,bd=null; for(let d=new Date(TODAY-3*365*864e5); d<=TODAY; d=new Date(+d+7*864e5)){ const w=R.filter(a=>{const g=(d-new Date(a.d))/864e5; return g>=0&&g<=90;}).map(a=>a.vd).sort((x,y)=>y-x); const v=w.length>1? w[1] : (w[0]||0); if(v>best){ best=v; bd=d; } } // pic robuste : 2e meilleure sortie de la fenêtre
   const v3=vdotNow(new Date(TODAY-91*864e5),90), d3=V-v3;
   verdict('pVo2','VO2max estimée',V.toFixed(1),`${Math.round(V/best*100)} % de ton pic sur 3 ans (${best.toFixed(1)}, ${fmtDate(bd)})`,
@@ -1241,11 +1460,11 @@ function vVol(){
     cur>=ly*0.9? 'good' : cur>=ly*0.6? 'warn' : 'bad');
 }
 function vHrEff(){
-  const L=DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun')&&(pt==='all'||a.s===pt)&&a.hr&&hrOK(a));
+  const L=DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun')&&(pt==='all'||a.s===pt)&&(hs==='all'||a.st===1)&&a.hr&&hrOK(a)&&kindOf(a)==='endurance');
   const r=L.filter(a=>inDays(a,0,60)).map(hrEff), o=L.filter(a=>inDays(a,365,425)).map(hrEff), b=L.filter(a=>inDays(a,0,365*3)).map(hrEff);
-  if(r.length<2) return verdict('pHrEff','Efficacité cardiaque','–','','Pas assez de sorties récentes avec cardio.','');
+  if(r.length<2) return verdict('pHrEff','Vitesse / FC','–','','Pas assez de sorties d\'endurance récentes avec cardio.','');
   const e=q(r,.5), p=o.length>=2? (e/q(o,.5)-1)*100 : NaN, top=q(b,.9);
-  verdict('pHrEff','Efficacité cardiaque',`${e.toFixed(2)} m/batt.`,'médiane des 60 derniers jours',
+  verdict('pHrEff','Vitesse / FC',`${e.toFixed(2)} m/batt.`,'médiane des sorties d\'endurance, 60 derniers jours',
     `${isNaN(p)?'':`Par rapport à la même période l'an dernier : <b>${sgn(p)} %</b>. `}Tes meilleures sorties sur 3 ans atteignent ${top.toFixed(2)} m/battement : tu en es à ${Math.round(e/top*100)} %. ${!isNaN(p)&&p<-3? 'Plus de sorties lentes en endurance fondamentale feront remonter cet indicateur.' : ''}`,
     isNaN(p)? '' : p>=0? 'good' : p>-5? 'warn' : 'bad');
 }
@@ -1274,7 +1493,7 @@ function vHrDur(){
 
 /* ---------- Estimation de course (onglet Préparation) ---------- */
 let _profCache=null;
-function speedProfile(){ if(_profCache) return _profCache; const B=gradeProfile(terrActs(0,548)); const V={}; Object.entries(B).forEach(([g,b])=>{ if(b.t>=180) V[+g]=b.d/b.t; }); return _profCache=V; }
+function speedProfile(){ if(_profCache) return _profCache; const B=gradeProfile(terrActs(0,548,false)); const V={}; Object.entries(B).forEach(([g,b])=>{ if(b.t>=180) V[+g]=b.d/b.t; }); return _profCache=V; }
 function vAt(V,g){ const ks=Object.keys(V).map(Number).sort((a,b)=>a-b); if(!ks.length) return NaN; if(V[g]) return V[g];
   let lo=null,hi=null; ks.forEach(k=>{ if(k<=g) lo=k; if(k>=g&&hi===null) hi=k; }); if(lo===null) return V[hi]; if(hi===null) return V[lo]; return V[lo]+(V[hi]-V[lo])*(g-lo)/(hi-lo); }
 function rawTerrainTime(km,dp){
@@ -1290,6 +1509,14 @@ function terrCalib(){ if(_calib) return _calib;
   const f=X.length>=4? linfit(X,Y) : null;
   return _calib={n:X.length, f:h=> f? Math.exp(f.f(Math.log(h))) : Math.pow(Math.max(h,1)/1.5,0.08)*1.02};
 }
+let _shp=null;
+function endStats(){ if(_shp) return _shp; const R=DATA.acts.filter(a=>RUNTYPES.includes(a.s));
+  const w=R.filter(a=>ageD(a)>=0&&ageD(a)<42), l=R.filter(a=>ageD(a)>=0&&ageD(a)<70);
+  return _shp={W:w.reduce((s,a)=>s+a.km+a.dp/100,0)/6, L:Math.max(0,...l.map(a=>a.km+a.dp/100))}; }
+function endShape(ke){ // « forme d'endurance » (comme le marathon shape de Runalyze) : volume des 6 dernières semaines et sortie la plus longue
+  if(ke<21) return null; const s=endStats(), Wr=Math.min(100,15+0.8*ke), Lr=Math.min(45,0.65*ke);
+  const sh=Math.min(1, 0.6*Math.min(1,s.W/Wr)+0.4*Math.min(1,s.L/Lr)), pen=(1-sh)*0.20*Math.max(0.3,Math.min(1,(ke-21)/40));
+  return {sh, pen, W:s.W, L:s.L, Wr, Lr}; }
 function estimateRace(km,dp){
   const ke=km+dp/100, V=currentVdot(), trail=dp/km>=20, parts=[];
   parts.push(['VO2max estimée (VDOT) appliquée au km-effort', predict(V,ke)]);
@@ -1297,9 +1524,10 @@ function estimateRace(km,dp){
   if(R.length){ let ws=0,wt=0; R.forEach(a=>{ const ka=a.km+a.dp/100, adj=predict(V,ka)/predict(refVdot(a.d),ka); const t=a.et*Math.pow(ke/ka,1.07)*adj; const w=Math.exp(-2*Math.abs(Math.log(ke/ka)))*Math.exp(-ageD(a)/900); ws+=w*Math.log(t); wt+=w; });
     parts.push([R.length>1? `Tes ${R.length} courses ${trail?'trail':'sur route'} passées, ajustées à ta forme actuelle` : `Ta course ${trail?'trail':'sur route'} passée, ajustée à ta forme actuelle`, Math.exp(ws/wt)]); }
   if(trail){ const m=rawTerrainTime(km,dp); if(m>0){ const c=terrCalib(); parts.push([`Tes vitesses en montée, descente et plat (18 mois), recalées sur ${c.n} courses`, m*c.f(m/3600)]); } }
-  const v=parts.map(p=>p[1]).sort((a,b)=>a-b), sec= v.length===3? v[1]*0.5+(v[0]+v[2])*0.25 : v.reduce((s,x)=>s+x,0)/v.length;
+  const v=parts.map(p=>p[1]).sort((a,b)=>a-b); let sec= v.length===3? v[1]*0.5+(v[0]+v[2])*0.25 : v.reduce((s,x)=>s+x,0)/v.length, lo=v[0], hi=v[v.length-1];
+  const es=endShape(ke); if(es && es.pen>0.002){ const f=1+es.pen; sec*=f; lo*=f; hi*=f; }
   const hr = (HRENV||hrEnvelope()).at(sec/3600);
-  return {sec, lo:v[0], hi:v[v.length-1], parts, ke, hr};
+  return {sec, lo, hi, parts, ke, hr, es};
 }
 
 /* ---------- 1. CARTE ---------- */
@@ -1346,10 +1574,12 @@ function drawMap(fit){
       <table style="font-size:13px;margin-bottom:8px"><tr><td>Distance</td><td class="n"><b>${a.km.toFixed(2)} km</b></td></tr>
       <tr><td>Dénivelé +</td><td class="n"><b>${a.dp} m</b></td></tr>
       <tr><td>Temps en mouvement</td><td class="n"><b>${hms(a.mt)}</b>${pc}</td></tr>
-      ${a.hr? `<tr><td>FC moyenne</td><td class="n"><b>${Math.round(a.hr)} bpm</b></td></tr>`:''}</table>
+      ${a.hr? `<tr><td>FC moyenne</td><td class="n"><b>${Math.round(a.hr)} bpm</b>${a.st===1?' <span class="sub">❤️ ceinture</span>':a.st===0?' <span class="sub">⌚ poignet</span>':''}</td></tr>`:''}</table>
+      ${RUNTYPES.includes(a.s)? `<div style="margin-bottom:8px;font-size:13px">Type de sortie : <select onchange="setKind('${a.i}',this.value)" style="font:inherit">${KINDS.map(([k,l])=>`<option value="${k}"${kindOf(a)===k?' selected':''}>${l}</option>`).join('')}</select></div>`:''}
       <div class="row"><button class="btn" onclick="gpx('${a.i}')">⬇ GPX simplifié</button>
-      <a class="btn" href="https://www.strava.com/activities/${a.i}/export_gpx" target="_blank" rel="noopener">GPX original</a>
-      <a class="btn pri" href="https://www.strava.com/activities/${a.i}" target="_blank" rel="noopener">Voir sur Strava ↗</a></div></div>`;
+      ${a._g? '' : `<a class="btn" href="https://www.strava.com/activities/${a.i}/export_gpx" target="_blank" rel="noopener">GPX original</a>
+      <a class="btn pri" href="https://www.strava.com/activities/${a.i}" target="_blank" rel="noopener">Voir sur Strava ↗</a>`}
+      ${a.gi? `<a class="btn${a._g?' pri':''}" href="https://connect.garmin.com/modern/activity/${a.gi}" target="_blank" rel="noopener">Garmin ↗</a>`:''}</div></div>`;
     });
     line.addTo(layerGroup); bounds.push(...pts.filter((_,i)=>i%5===0));
   });
@@ -1382,15 +1612,18 @@ let pt='all', pp=0, py='pace';
 function initPerf(){
   $$('[data-pt]').forEach(b=>b.onclick=()=>{pt=b.dataset.pt;$$('[data-pt]').forEach(x=>x.classList.toggle('on',x===b));renderPerf();});
   $$('[data-pp]').forEach(b=>b.onclick=()=>{pp=+b.dataset.pp;$$('[data-pp]').forEach(x=>x.classList.toggle('on',x===b));renderPerf();});
+  $$('[data-pk]').forEach(b=>{ b.classList.toggle('on',b.dataset.pk===pk); b.onclick=()=>{pk=b.dataset.pk;try{localStorage.setItem('cairn_pk',pk);}catch(e){}$$('[data-pk]').forEach(x=>x.classList.toggle('on',x===b));renderPerf();}; });
+  $$('[data-hs]').forEach(b=>b.onclick=()=>{hs=b.dataset.hs;$$('[data-hs]').forEach(x=>x.classList.toggle('on',x===b));_vhCal=null;renderHR();renderVo2();setTimeout(perfVerdicts,30);});
+  $$('[data-hv]').forEach(b=>b.onclick=()=>{hv=b.dataset.hv;$$('[data-hv]').forEach(x=>x.classList.toggle('on',x===b));renderHR();setTimeout(hrVerdicts,30);});
   $$('[data-py]').forEach(b=>b.onclick=()=>{py=b.dataset.py;$$('[data-py]').forEach(x=>x.classList.toggle('on',x===b));renderScatter();try{vScatter();}catch(e){}});
   try{ const h=JSON.parse(localStorage.getItem('ta_hr')||'null'); if(h){ $('#hrMax').value=h[0]; $('#hrRest').value=h[1]; } else { const hm=DATA.acts.filter(a=>a.hrm&&(a.s==='Run'||a.s==='TrailRun')).map(a=>a.hrm), m=hm.length>=10? q(hm,.99) : 0; if(m>150&&m<215) $('#hrMax').value=Math.round(m); } }catch(e){}
-  ['#hrMax','#hrRest'].forEach(s=>$(s).addEventListener('input',()=>{ _lthr=null; _vhCal=null; renderHR(); renderTrends(); renderVo2(); setTimeout(perfVerdicts,30); }));
+  ['#hrMax','#hrRest'].forEach(s=>$(s).addEventListener('input',()=>{ _lthr=null; _vhCal=null; DATA.acts.forEach(a=>delete a._k); renderHR(); renderTrends(); renderVo2(); setTimeout(perfVerdicts,30); }));
   renderPerf(); renderBE();
 }
-function perfRuns(){ return runs.filter(a=>(pt==='all'||a.s===pt) && (!pp || daysAgo(a.d,365*pp))); }
+function perfRuns(){ return runs.filter(a=>ptOK(a) && (!pp || daysAgo(a.d,365*pp))); }
 const BINS=[0,6,9,12,16,19,23,28,35,45,60,90,200];
 const binLabel = i => BINS[i+1]>=200? `${BINS[i]}+` : `${BINS[i]}–${BINS[i+1]}`;
-function renderPerf(){ renderTiles(); renderTrends(); renderScatter(); renderKeT(); renderTerrain(); renderRaceHist(); renderFormat(); renderVo2(); renderVol(); renderHR(); setTimeout(perfVerdicts,30); }
+function renderPerf(){ renderKindHint(); renderTiles(); renderTrends(); renderScatter(); renderKeT(); renderTerrain(); renderRaceHist(); renderFormat(); renderVo2(); renderVol(); renderHR(); setTimeout(perfVerdicts,30); }
 function renderTiles(){
   const all = DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && (pt==='all'||a.s===pt));
   const y1 = all.filter(a=>daysAgo(a.d,365));
@@ -1408,8 +1641,39 @@ function renderTiles(){
   $('#tiles').innerHTML = t.map(x=>`<div class="tile"><div class="k">${x[0]}</div><div class="v">${x[1]}</div><div class="d">${x[2]}</div></div>`).join('');
 }
 
-/* ---------- Tendances de forme (charge d'entraînement) ---------- */
+/* ---------- Type de sortie : course / séance / endurance / récup ---------- */
 const RUNTYPES = ['Run','TrailRun'];
+const KINDS=[['course','Course'],['seance','Séance (fractionné, seuil…)'],['endurance','Endurance'],['recup','Récup / accompagnée']];
+let _kindU=null; const kindUser=()=>{ if(_kindU) return _kindU; try{ _kindU=JSON.parse(localStorage.getItem('cairn_kind')||'{}'); }catch(e){ _kindU={}; } return _kindU; };
+const RX_SEANCE=/(\d+\s*[x×]\s*\d+)|fractionn|interval|seuil|\bvma\b|tempo|\bc[ôo]tes?\b|\bpiste\b|s[ée]ance|\btest\b|pyramide|fartlek|allure (semi|marathon|10|course)/i;
+const RX_RECUP=/r[ée]cup|run ?& ?bike|\bavec\b|accompagn|poussette|\bchien|balade|tranquille|d[ée]crassage|footing lent/i;
+function kindOf(a){
+  if(!RUNTYPES.includes(a.s)) return null;
+  if(a._k) return a._k;
+  const u=kindUser()[a.i]; if(u) return a._k=u;
+  if(a.rc) return a._k='course';
+  const t=a.n||'';
+  if(RX_SEANCE.test(t)) return a._k='seance';
+  if(RX_RECUP.test(t)) return a._k='recup';
+  if(a.ta>=2.5 || a.te>=4.2) return a._k='seance';
+  if(a.hr>80 && a.hr<215 && a.mt>=600){ const [,rs]=hrIn(), IF=(a.hr-rs)/(lthr()-rs);
+    if(IF>=0.9 && a.mt<5400) return a._k='seance'; if(IF<0.62) return a._k='recup'; return a._k='endurance'; }
+  if(a.km>0 && a.mt>0){ const r=(a.km+a.dp/100)*1000/(a.mt/60)/velAt(refVdot(a.d),.88); if(r>=0.97 && a.mt<5400) return a._k='seance'; if(r<0.68) return a._k='recup'; }
+  return a._k='endurance';
+}
+function setKind(id,k){ const a=DATA.acts.find(x=>x.i===id); if(!a) return; const U=kindUser();
+  const e=raceEdits(); e.add=e.add.filter(x=>x!==id); e.del=e.del.filter(x=>x!==id);
+  if(k==='course'){ delete U[id]; e.add.push(id); a.rc=1; } else { U[id]=k; if(a.rc){ e.del.push(id); delete a.rc; } }
+  try{ localStorage.setItem('cairn_kind',JSON.stringify(U)); localStorage.setItem('ta_races',JSON.stringify(e)); }catch(_){}
+  delete a._k; _vhCal=null; _calib=null; if(inited.performance) setTimeout(renderPerf,10); }
+let pk='all', hs='all', hv='ke';
+try{ pk=localStorage.getItem('cairn_pk')||'all'; }catch(e){}
+const ptOK = a => (pt==='all'||a.s===pt) && (pk==='all'||kindOf(a)===pk);
+const hrW = a => a.st===1? 1 : a.st===0? ((kindOf(a)==='seance'||a.s==='TrailRun')? 0.35 : 0.75) : 0.7;   // confiance dans la FC : ceinture > poignet (moins fiable en fractionné et en trail)
+function renderKindHint(){ const R=DATA.acts.filter(a=>RUNTYPES.includes(a.s)&&(pt==='all'||a.s===pt)&&(!pp||daysAgo(a.d,365*pp))); const c={}; R.forEach(a=>{ const k=kindOf(a); c[k]=(c[k]||0)+1; });
+  const el=document.getElementById('pkHint'); if(el) el.innerHTML=`Sur la période : <b>${c.course||0}</b> courses · <b>${c.seance||0}</b> séances · <b>${c.endurance||0}</b> sorties d'endurance · <b>${c.recup||0}</b> récup / accompagnées. Classement automatique (course Strava, titre, intensité cardiaque), modifiable dans la fiche de la sortie sur la carte. Le type filtre les analyses d'allure, de format, de terrain et de cardio ; volume et charge comptent toujours toutes les sorties.`; }
+
+/* ---------- Tendances de forme (charge d'entraînement) ---------- */
 const dayKey = d => d.toISOString().slice(0,10);
 const _refCache = {};
 function refVdot(dateStr){
@@ -1560,10 +1824,10 @@ function vo2hrFactor(){ if(_vhCal) return _vhCal;
   return _vhCal={f,how,n:L.length}; }
 const vo2hr = a => { const r=vo2hrRaw(a); return isNaN(r)? NaN : r*vo2hrFactor().f; };
 function vo2hrNow(ref=TODAY, win=30){ // moyenne pondérée par la durée sur la fenêtre (comme Runalyze)
-  const L=DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && (pt==='all'||a.s===pt)).filter(a=>{ const g=(ref-new Date(a.d))/864e5; return g>=0&&g<win; }).map(a=>[vo2hr(a),a.mt]).filter(x=>!isNaN(x[0]));
+  const L=DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && ptOK(a) && (hs==='all'||a.st===1)).filter(a=>{ const g=(ref-new Date(a.d))/864e5; return g>=0&&g<win; }).map(a=>[vo2hr(a),a.mt*hrW(a)]).filter(x=>!isNaN(x[0]));
   if(L.length<2) return NaN; const w=L.reduce((s,x)=>s+x[1],0); return L.reduce((s,x)=>s+x[0]*x[1],0)/w; }
 function renderVo2(){
-  const R=runs.filter(a=>pt==='all'||a.s===pt);
+  const R=runs.filter(ptOK); if(!R.length){ Plotly.react('pVo2',[],{...PL},CFG); return; }
   const start = pp? new Date(TODAY-365*pp*864e5) : new Date(R[0].d);
   const xs=[],ys=[];
   for(let d=new Date(start); d<=TODAY; d=new Date(+d+7*864e5)){
@@ -1573,7 +1837,7 @@ function renderVo2(){
   const be = DATA.be.filter(b=>(pt==='all'||b.sp===pt) && (!pp || +b.y>=TODAY.getFullYear()-pp));
   const byY={}; be.forEach(b=>{ if(!byY[b.y]||b.vd>byY[b.y].vd) byY[b.y]=b; });
   const pts=Object.values(byY);
-  const R0hr=()=>DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && (pt==='all'||a.s===pt) && new Date(a.d)>=start && !isNaN(vo2hr(a)));
+  const R0hr=()=>DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && ptOK(a) && (hs==='all'||a.st===1) && new Date(a.d)>=start && !isNaN(vo2hr(a)));
   Plotly.react('pVo2',[
     {type:'scatter',mode:'lines',name:'VDOT 90 j glissants',x:xs,y:ys,line:{color:'#2a78d6',width:3.5},connectgaps:false,hovertemplate:'%{x|%d %b %Y}<br>VDOT : %{y:.1f}<extra></extra>'},
     ...(()=>{ const H=R0hr(); if(H.length<5) return [];
@@ -1594,25 +1858,27 @@ function renderVol(){
   Plotly.react('pVol',[{type:'bar',x:keys.map(k=>k+'-01'),y:keys.map(k=>m[k]||0),marker:{color:'#2a78d6',line:{width:2,color:'#fcfcfb'}},hovertemplate:'%{x|%B %Y}<br>%{y:.0f} km<extra></extra>'}],
     {...PL,showlegend:false,xaxis:{...AX,tickformat:'%b %y'},yaxis:{...AX,title:'km'}},CFG);
 }
-const hrEff = a => (a.km+a.dp/100)*1000/(a.mt/60*a.hr);   // m-effort par battement
+const hrEff = a => (hv==='real'? a.km : a.km+a.dp/100)*1000/(a.mt/60*a.hr);   // vitesse / FC : mètres (ou m-effort) par battement
 const hrOK = a => a.hr>80 && a.hr<210 && a.mt>=900 && a.km>=2;
 function renderHR(){
   const mx=+$('#hrMax').value||191, rs=+$('#hrRest').value||55;
   try{ localStorage.setItem('ta_hr',JSON.stringify([mx,rs])); }catch(e){}
-  const all = DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && (pt==='all'||a.s===pt) && a.hr && hrOK(a)).sort((a,b)=>a.d.localeCompare(b.d));
+  const all = DATA.acts.filter(a=>(a.s==='Run'||a.s==='TrailRun') && ptOK(a) && (hs==='all'||a.st===1) && a.hr && hrOK(a)).sort((a,b)=>a.d.localeCompare(b.d));
   const list = all.filter(a=>!pp || daysAgo(a.d,365*pp));
   const first = all.length? all[0].d : null;
-  $('#hrHint').innerHTML = all.length? `${all.length} sorties de course avec cardio (depuis ${fmtDate(first)}), dont ${list.length} sur la période choisie. « % réserve » = part de ta réserve cardiaque utilisée (ajuste FC max et repos).` : 'Aucune sortie avec fréquence cardiaque sur cette sélection.';
+  $('#hrHint').innerHTML = all.length? `${all.length} sorties de course avec cardio (depuis ${fmtDate(first)}), dont ${list.length} sur la période choisie. « % réserve » = part de ta réserve cardiaque utilisée (ajuste FC max et repos). ${(n=>n? `Source du cardio connue (fichiers Garmin) pour ${n} sorties, dont ${all.filter(a=>a.st===1).length} avec ceinture : la FC au poignet compte moins dans la VO2max cardio, surtout en fractionné et en trail.` : 'Connecte Garmin (écran Données) pour savoir quelles sorties ont été faites avec la ceinture cardio.')(all.filter(a=>a.st!==undefined).length)}` : 'Aucune sortie avec fréquence cardiaque sur cette sélection.';
   if(!list.length){ $('#hrTable').innerHTML=''; Plotly.react('pHrEff',[],{...PL},CFG); Plotly.react('pHrPace',[],{...PL},CFG); return; }
-  // efficacité dans le temps + médiane glissante 60 j
-  const xs=list.map(a=>a.d.slice(0,10)), ys=list.map(hrEff);
-  const roll=list.map(a=>{ const t=new Date(a.d); const w=list.filter(b=>{const g=(t-new Date(b.d))/864e5; return g>=0&&g<60;}).map(hrEff); return w.length>=3? q(w,.5):null; });
+  $('#hsWrap').style.display = DATA.acts.filter(a=>a.st===1).length>=3? '' : 'none';
+  // vitesse / FC dans le temps (sorties d'endurance) + médiane glissante 60 j
+  const steady=list.filter(a=>kindOf(a)==='endurance');
+  const xs=steady.map(a=>a.d.slice(0,10)), ys=steady.map(hrEff);
+  const roll=steady.map(a=>{ const t=new Date(a.d); const w=steady.filter(b=>{const g=(t-new Date(b.d))/864e5; return g>=0&&g<60;}).map(hrEff); return w.length>=3? q(w,.5):null; });
   const recentCut = new Date(TODAY-91*864e5);
   const isRec = a => new Date(a.d)>=recentCut;
   Plotly.react('pHrEff',[
-    {type:'scatter',mode:'markers',name:'sortie',x:xs,y:ys,customdata:list.map(a=>[a.n,a.km.toFixed(1),Math.round(a.hr),pace(a.mt/a.km)]),marker:{size:8,color:list.map(a=>a.s==='TrailRun'?'#eb6834':'#2a78d6'),opacity:.55},hovertemplate:'<b>%{customdata[0]}</b><br>%{x|%d %b %Y} · %{customdata[1]} km · %{customdata[3]}/km<br>FC %{customdata[2]} · %{y:.2f} m/batt.<extra></extra>'},
+    {type:'scatter',mode:'markers',name:'sortie',x:xs,y:ys,customdata:steady.map(a=>[a.n,a.km.toFixed(1),Math.round(a.hr),pace(a.mt/a.km),a.st===1?'ceinture':a.st===0?'poignet':'source inconnue']),marker:{size:8,color:steady.map(a=>a.s==='TrailRun'?'#eb6834':'#2a78d6'),opacity:steady.map(a=>a.st===1?.95:.4),line:{width:steady.map(a=>a.st===1?1.5:0),color:'#0b0b0b'}},hovertemplate:'<b>%{customdata[0]}</b><br>%{x|%d %b %Y} · %{customdata[1]} km · %{customdata[3]}/km<br>FC %{customdata[2]} (%{customdata[4]}) · %{y:.2f} m/batt.<extra></extra>'},
     {type:'scatter',mode:'lines',name:'médiane 60 j',x:xs,y:roll,line:{color:'#0b0b0b',width:3.5},connectgaps:true,hovertemplate:'Médiane 60 j : %{y:.2f}<extra></extra>'}
-  ],{...PL,legend:{orientation:'h',y:1.12,x:0},yaxis:{...AX,title:'m-effort / battement'},xaxis:{...AX}},CFG);
+  ],{...PL,legend:{orientation:'h',y:1.12,x:0},yaxis:{...AX,title:hv==='real'?'mètres / battement':'m-effort / battement'},xaxis:{...AX}},CFG);
   // allure vs FC
   const grp=[['plus de 3 mois',list.filter(a=>!isRec(a)),'#9db8d9'],['3 derniers mois',list.filter(isRec),'#eb6834']];
   const py2=a=>a.mt/(a.km+a.dp/100)/60;
@@ -1624,11 +1890,11 @@ function renderHR(){
   // tableau
   const desc=[...list].reverse();
   const rows = desc.map(a=>{ const hrr=(a.hr-rs)/(mx-rs);
-    return `<tr><td>${fmtDate(a.d)}</td><td>${a.n.replace(/</g,'&lt;').slice(0,34)}</td><td class="n">${a.km.toFixed(1)} km</td><td class="n">${a.dp} m</td><td class="n">${pace(a.mt/a.km)}</td><td class="n">${Math.round(a.hr)}${a.hrm?` <span class="sub">/ ${a.hrm}</span>`:''}</td><td class="n">${Math.round(hrr*100)} %</td><td class="n">${hrEff(a).toFixed(2)}</td><td class="n">${(v=>isNaN(v)?'–':v.toFixed(1))(vo2hr(a))}</td></tr>`; }).join('');
-  const avg = list.reduce((s,a)=>s+a.hr,0)/list.length, eff=q(list.map(hrEff),.5);
+    return `<tr><td>${fmtDate(a.d)}</td><td>${a.n.replace(/</g,'&lt;').slice(0,34)}</td><td class="n">${a.km.toFixed(1)} km</td><td class="n">${a.dp} m</td><td class="n">${pace(a.mt/a.km)}</td><td class="n">${Math.round(a.hr)}${a.hrm?` <span class="sub">/ ${a.hrm}</span>`:''}${a.st===1?' ❤️':a.st===0?' <span class="sub">⌚</span>':''}</td><td>${({course:'course',seance:'séance',endurance:'endurance',recup:'récup'})[kindOf(a)]||''}</td><td class="n">${Math.round(hrr*100)} %</td><td class="n">${hrEff(a).toFixed(2)}</td><td class="n">${(v=>isNaN(v)?'–':v.toFixed(1))(vo2hr(a))}</td></tr>`; }).join('');
+  const avg = list.reduce((s,a)=>s+a.hr,0)/list.length, eff=q((steady.length?steady:list).map(hrEff),.5);
   setTimeout(()=>{ renderHrTrend(); renderHrDur(); hrVerdicts(); },0);
-  $('#hrTable').innerHTML = `<tr><th>Date</th><th>Sortie</th><th class="n">Dist.</th><th class="n">D+</th><th class="n">Allure</th><th class="n">FC moy. / max</th><th class="n">% réserve</th><th class="n">m-effort / battement</th><th class="n">VO2max cardio</th></tr>
-  <tr><td colspan="5"><b>Moyenne (${list.length} sorties)</b></td><td class="n"><b>${Math.round(avg)}</b></td><td class="n"><b>${Math.round((avg-rs)/(mx-rs)*100)} %</b></td><td class="n"><b>${eff.toFixed(2)}</b> <span class="sub">(médiane)</span></td><td class="n">${(v=>isNaN(v)?'–':'<b>'+v.toFixed(1)+'</b> <span class="sub">(30 j)</span>')(vo2hrNow())}</td></tr>${rows}`;
+  $('#hrTable').innerHTML = `<tr><th>Date</th><th>Sortie</th><th class="n">Dist.</th><th class="n">D+</th><th class="n">Allure</th><th class="n">FC moy. / max</th><th>Type</th><th class="n">% réserve</th><th class="n">Vitesse / FC</th><th class="n">VO2max cardio</th></tr>
+  <tr><td colspan="5"><b>Moyenne (${list.length} sorties)</b></td><td class="n"><b>${Math.round(avg)}</b></td><td></td><td class="n"><b>${Math.round((avg-rs)/(mx-rs)*100)} %</b></td><td class="n"><b>${eff.toFixed(2)}</b> <span class="sub">(médiane)</span></td><td class="n">${(v=>isNaN(v)?'–':'<b>'+v.toFixed(1)+'</b> <span class="sub">(30 j)</span>')(vo2hrNow())}</td></tr>${rows}`;
 }
 function renderBE(){
   const order=['5k','10k','Semi','Marathon'];
@@ -1648,7 +1914,13 @@ function initPrep(){
   $('#fmtChips').innerHTML = FORMATS.map((f,i)=>`<button class="chip${i===0?' on':''}" data-f="${i}">${f[0]}</button>`).join('');
   $$('[data-f]').forEach(b=>b.onclick=()=>{ fmtIdx=+b.dataset.f; $$('[data-f]').forEach(x=>x.classList.toggle('on',x===b)); const f=FORMATS[fmtIdx]; if(f[1]!==null){ $('#dMin').value=f[1];$('#dMax').value=f[2];$('#hMin').value=f[3];$('#hMax').value=f[4]; } selRace=null; renderRaces(); planContext(); });
   ['#dMin','#dMax','#hMin','#hMax'].forEach(s=>$(s).addEventListener('input',()=>{ fmtIdx=FORMATS.length-1; $$('[data-f]').forEach((x,i)=>x.classList.toggle('on',i===fmtIdx)); renderRaces(); planContext(); }));
-  const regs=[...new Set(RACES.map(r=>r.reg))].sort();
+  loadMyRaces();
+  $('#myAdd').onclick=()=>{ const r={n:$('#myN').value.trim(), date:$('#myD').value, km:+$('#myK').value, dp:Math.round(+$('#myP').value||0), city:$('#myC').value.trim(), url:$('#myU').value.trim()};
+    if(!r.n||!r.date||!(r.km>0)){ $('#myMsg').textContent='Indique au moins le nom, la date et la distance.'; return; }
+    if(r.url && !/^https?:\/\//.test(r.url)) r.url='';
+    const L=myRaces(); L.push(r); try{ localStorage.setItem('cairn_myraces',JSON.stringify(L)); }catch(e){}
+    ['#myN','#myK','#myP','#myC','#myU'].forEach(x=>$(x).value=''); $('#myMsg').textContent=`Ajoutée : ${r.n}`; loadMyRaces(); renderRaces(); };
+  const regs=[...new Set(RACES.filter(r=>!r.my).map(r=>r.reg))].sort();
   $('#rReg').innerHTML='<option value="">Toute la France</option>'+regs.map(r=>`<option>${r}</option>`).join('');
   ['#rReg','#rSort'].forEach(s=>$(s).addEventListener('change',renderRaces));
   $('#pGo').onclick=()=>buildPlan(true);
@@ -1670,11 +1942,15 @@ function initPrep(){
   const d=new Date(+nextMonday()+12*7*864e5-864e5); $('#pDate').value=d.toISOString().slice(0,10);
   buildPlan(false);
 }
+const myRaces=()=>{ try{ return JSON.parse(localStorage.getItem('cairn_myraces')||'[]'); }catch(e){ return []; } };
+function loadMyRaces(){ for(let i=RACES.length-1;i>=0;i--) if(RACES[i].my) RACES.splice(i,1);
+  myRaces().forEach((r,i)=>RACES.push({...r, my:1, mi:i, ok:1, reg:'Mes courses', dep:'perso', city:r.city||'–', lat:HOME[0], lng:HOME[1], type:r.dp/r.km>=20?'Trail':'Route', src:'perso'})); }
+function delMyRace(i){ const L=myRaces(); L.splice(i,1); try{ localStorage.setItem('cairn_myraces',JSON.stringify(L)); }catch(e){} loadMyRaces(); renderRaces(); }
 function nextMonday(){ const d=new Date(TODAY); d.setHours(12); const k=(8-d.getDay())%7||7; return new Date(+d+k*864e5); }
 function filtRaces(){
   const a=+$('#dMin').value, b=+$('#dMax').value, c=+$('#hMin').value, e=+$('#hMax').value, reg=$('#rReg').value;
   const lim=new Date(+TODAY+366*864e5);
-  let L=RACES.filter(r=>r.km>=a&&r.km<=b&&r.dp>=c&&r.dp<=e&&(!reg||r.reg===reg)&&new Date(r.date)>=TODAY&&new Date(r.date)<=lim)
+  let L=RACES.filter(r=>(r.my || (r.km>=a&&r.km<=b&&r.dp>=c&&r.dp<=e&&(!reg||r.reg===reg)))&&new Date(r.date)>=TODAY&&new Date(r.date)<=lim)
     .map(r=>({...r,away:Math.round(distKm(HOME,[r.lat,r.lng]))}));
   L.sort($('#rSort').value==='dist'?(x,y)=>x.away-y.away:(x,y)=>x.date.localeCompare(y.date));
   return L;
@@ -1685,7 +1961,7 @@ function renderRaces(){
   $('#raceTable').innerHTML=`<tr><th>Date</th><th>Course</th><th>Lieu</th><th>Région</th><th class="n">Distance</th><th class="n">D+</th><th class="n">km-effort</th><th class="n">Temps estimé</th><th class="n">Depuis chez toi</th><th></th></tr>`+
     L.map(r=>{ const ke=r.km+r.dp/100; const t=estimateRace(r.km,r.dp).sec;
       const name = r.url? `<a href="${r.url}" target="_blank" rel="noopener">${r.n}</a>` : `<a href="https://www.google.com/search?q=${encodeURIComponent(r.n+' 2027')}" target="_blank" rel="noopener">${r.n}</a>`;
-      return `<tr class="${selRace&&selRace.n===r.n?'sel':''}"><td style="white-space:nowrap">${fmtDate(r.date)}<br><span class="badge ${r.ok?'ok':'tbc'}">${r.ok?'confirmée':'à confirmer'}</span></td><td>${name}<br><span class="badge">${r.type}</span></td><td>${r.city} (${r.dep})</td><td>${r.reg}</td><td class="n">${r.km} km</td><td class="n">${r.dpe?'≈ ':''}${r.dp} m</td><td class="n">${ke.toFixed(1)}</td><td class="n">${ke>70?'~':''}${hmsC(t)}</td><td class="n">${r.away} km</td><td><button data-race="${r.n}">Préparer</button></td></tr>`; }).join('');
+      return `<tr class="${selRace&&selRace.n===r.n?'sel':''}"><td style="white-space:nowrap">${fmtDate(r.date)}<br><span class="badge ${r.ok?'ok':'tbc'}">${r.ok?'confirmée':'à confirmer'}</span></td><td>${name}<br><span class="badge">${r.type}</span>${r.my?' <span class="badge" style="background:#fff4ec;color:#a3410f">perso</span>':''}</td><td>${r.city} (${r.dep})</td><td>${r.reg}</td><td class="n">${r.km} km</td><td class="n">${r.dpe?'≈ ':''}${r.dp} m</td><td class="n">${ke.toFixed(1)}</td><td class="n">${ke>70?'~':''}${hmsC(t)}</td><td class="n">${r.my?'–':r.away+' km'}</td><td><button data-race="${r.n}">Préparer</button>${r.my?` <button onclick="delMyRace(${r.mi})" title="Retirer">✕</button>`:''}</td></tr>`; }).join('');
   $$('[data-race]').forEach(b=>b.onclick=()=>{ selRace=RACES.find(r=>r.n===b.dataset.race); $('#pDate').value=selRace.date;
     const w=Math.floor((new Date(selRace.date+'T12:00:00')-nextMonday())/(7*864e5))+1; $('#pWeeks').value=Math.max(2,Math.min(30,w));
     renderRaces(); planContext(); buildPlan(true); $('#planOut').scrollIntoView({behavior:'smooth',block:'start'}); });
@@ -1738,6 +2014,7 @@ function planContext(){
   $('#planCtx').innerHTML = `Objectif : <b>${T.name}</b> (${T.km} km, ${T.dp} m D+, ${ke.toFixed(1)} km-effort). Ton point de départ : VDOT <b>${V.toFixed(1)}</b>, <b>${r.km.toFixed(1)} km</b> et <b>${Math.round(r.dp)} m D+</b> par semaine en moyenne sur les 8 dernières semaines (${r.n.toFixed(1)} sorties/sem.), sortie la plus longue ${r.long.toFixed(1)} km. Temps estimé aujourd'hui : <b>${hmsC(E.sec)}</b>, soit <b>${pace(E.sec/T.km)}/km</b>${ke>70?' (très indicatif sur ultra)':''}.`
     + `<div class="diag" style="margin-top:10px"><b>🎯 Estimation : ${hmsC(E.sec)}</b> (fourchette ${hmsC(E.lo)} – ${hmsC(E.hi)}) · allure moyenne <b>${pace(E.sec/T.km)}/km</b> (${pace(E.sec/ke)}/km-effort)${isNaN(E.hr)?'':` · FC cible ≈ <b>${Math.round(E.hr-4)}–${Math.round(E.hr)} bpm</b>`}<br>`
     + E.parts.map(p=>`<span class="sub">• ${p[0]} : ${hmsC(p[1])}</span>`).join('<br>')
+    + (E.es? `<br><span class="sub">• Forme d'endurance : <b>${Math.round(E.es.sh*100)} %</b> (${Math.round(E.es.W)} km-effort/sem. sur 6 semaines pour ≈ ${Math.round(E.es.Wr)} conseillés ; sortie la plus longue ${Math.round(E.es.L)} km-effort pour ≈ ${Math.round(E.es.Lr)}) → ${E.es.pen>0.002? `<b>+${(E.es.pen*100).toFixed(1)} %</b> sur le temps estimé` : 'pas de correction'}</span>` : '')
     + `<br><span class="sub">L'estimation combine ces méthodes (moyenne pondérée vers la valeur centrale). La FC cible est la FC la plus haute que tu tiens habituellement sur cette durée.</span></div>`;
 }
 function buildPlan(show){
@@ -1790,9 +2067,25 @@ function buildPlan(show){
     (prog? `<div class="sub" style="margin-top:6px">Allures de départ (semaine 1) :</div><div class="paces">${pb(P)}</div><div class="sub">Allures en fin de préparation :</div><div class="paces">${pb(Pend)}</div>` : `<div class="paces">${pb(P)}</div>`);
   // last week contains race
   weeks.forEach((wk,i)=>{ wk.sessions = sessions(wk, i===N-1, {S,T,trail,P:wk.P,specPace,RP,ke,peak,goal:g,raceT}); });
-  window._plan={weeks,T,N,S};
+  const FR=freshPlan(weeks, end, S);
+  window._plan={weeks,T,N,S,FR};
   const PH={base:['Fondation','ph-base'],dev:['Développement','ph-dev'],spe:['Spécifique','ph-spe'],aff:['Affûtage','ph-aff'],rec:['Semaine allégée','ph-rec']};
-  if(show!==false) $('#planOut').innerHTML = (warn?`<div class="wk ph-aff" style="background:#fdf0dc">${warn}</div>`:'')+weeks.map(wk=>`<div class="wk ${PH[wk.phase][1]}"><div class="h"><b>Semaine ${wk.w}</b><span class="sub">${wk.date.toLocaleDateString('fr-FR',{day:'numeric',month:'short'})} → ${new Date(+wk.date+6*864e5).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</span><span class="badge">${PH[wk.phase][0]}</span><span class="badge">≈ ${Math.round(wk.vol)} km</span>${prog&&wk.phase!=='aff'?`<span class="badge">seuil ${pace(wk.P.T)}/km</span>`:''}${trail?`<span class="badge">≈ ${Math.round(wk.dp/50)*50} m D+</span>`:''}</div><ul>${wk.sessions.map(s=>`<li>${s}</li>`).join('')}</ul></div>`).join('');
+  const frBox = FR? (()=>{ const t=FR.tsb, ok=t>=5&&t<=25, cls=t<-5?'#fbe3e0':ok?'#e3f4ec':'#fdf0dc';
+    const adv = t<-5? 'tu risques d\'arriver fatigué : allège les deux dernières semaines ou recule la sortie longue.' : t<5? 'un peu juste : garde l\'affûtage tel quel et dors bien la dernière semaine.' : t<=25? 'bon équilibre entre forme et fraîcheur.' : 'très reposé, mais la forme baisse : l\'affûtage pourrait être un peu plus court.';
+    return `<div class="wk" style="background:${cls}">🔋 <b>Le jour J, si tu suis ce plan</b> : forme (CTL) <b>${Math.round(FR.ctl)}</b> (aujourd'hui ${Math.round(FR.ctl0)}), fraîcheur (TSB) <b>${t>=0?'+':''}${Math.round(t)}</b> — ${adv} <span class="sub">Zone idéale pour une course : +5 à +25. Projection à partir de la charge de tes 8 dernières semaines par km.</span></div>`; })() : '';
+  if(show!==false) $('#planOut').innerHTML = (warn?`<div class="wk ph-aff" style="background:#fdf0dc">${warn}</div>`:'')+frBox+weeks.map(wk=>`<div class="wk ${PH[wk.phase][1]}"><div class="h"><b>Semaine ${wk.w}</b><span class="sub">${wk.date.toLocaleDateString('fr-FR',{day:'numeric',month:'short'})} → ${new Date(+wk.date+6*864e5).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</span><span class="badge">${PH[wk.phase][0]}</span><span class="badge">≈ ${Math.round(wk.vol)} km</span>${prog&&wk.phase!=='aff'?`<span class="badge">seuil ${pace(wk.P.T)}/km</span>`:''}${trail?`<span class="badge">≈ ${Math.round(wk.dp/50)*50} m D+</span>`:''}${wk.tsb!=null?`<span class="badge" title="fraîcheur prévue en fin de semaine">fraîcheur ${wk.tsb>=0?'+':''}${Math.round(wk.tsb)}</span>`:''}</div><ul>${wk.sessions.map(s=>`<li>${s}</li>`).join('')}</ul></div>`).join('');
+}
+function freshPlan(weeks, raceDay, S){ // projection forme / fatigue / fraîcheur jusqu'au jour de la course
+  const LS=loadSeries(); if(!LS.length) return null; const last=LS[LS.length-1]; let ctl=last.ctl, atl=last.atl;
+  const R=DATA.acts.filter(a=>RUNTYPES.includes(a.s)&&ageD(a)>=0&&ageD(a)<56), km=R.reduce((s,a)=>s+a.km,0), ld=R.reduce((s,a)=>s+actLoad(a),0), perKm=km>20? ld/km : 6.5;
+  const pat={2:[2,6],3:[1,3,6],4:[1,3,5,6],5:[0,1,3,5,6],6:[0,1,2,3,5,6]}[Math.max(2,Math.min(6,S))];
+  const rk=dayKey(raceDay); let d=new Date(TODAY); d.setHours(12,0,0,0); d=new Date(+d+864e5);
+  for(let i=0;i<400 && dayKey(d)<rk;i++){
+    const w=weeks.find(x=> d>=x.date && d<new Date(+x.date+7*864e5)); let l=0;
+    if(w){ const dow=(d.getDay()+6)%7; if(pat.includes(dow)) l=w.vol*perKm/pat.length; }
+    ctl+=(l-ctl)/42; atl+=(l-atl)/7; if(w && d.getDay()===0) w.tsb=ctl-atl;
+    d=new Date(+d+864e5); }
+  return {ctl, atl, tsb:ctl-atl, ctl0:last.ctl, tsb0:last.ctl-last.atl};
 }
 function sessions(wk, last, o){
   const {S,T,trail,P,specPace,RP,ke}=o, E=`${pace(P.E[0])}–${pace(P.E[1])}/km`;
