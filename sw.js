@@ -1,5 +1,5 @@
 // Cairn_test – service worker (cache hors-ligne)
-const VERSION = 'cairn-v2.4b';
+const VERSION = 'cairn-v2.4b2';
 const SHELL = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/favicon.png'];
 const LIBS = ['https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js',

@@ -149,7 +149,7 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
 </head>
 <body>
 <header>
-  <div><h1><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-4px;margin-right:6px"><ellipse cx="12" cy="19.5" rx="9" ry="3.2" fill="#52514e"/><ellipse cx="12" cy="13.6" rx="6.4" ry="2.8" fill="#7d7b75"/><ellipse cx="12" cy="8.6" rx="4.2" ry="2.3" fill="#a5a29b"/><ellipse cx="12" cy="4.4" rx="2.4" ry="1.7" fill="var(--accent)"/></svg>Cairn<span> · carnet de trail · v2.4 β</span></h1><div class="sub" id="subtitle"></div></div>
+  <div><h1><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-4px;margin-right:6px"><ellipse cx="12" cy="19.5" rx="9" ry="3.2" fill="#52514e"/><ellipse cx="12" cy="13.6" rx="6.4" ry="2.8" fill="#7d7b75"/><ellipse cx="12" cy="8.6" rx="4.2" ry="2.3" fill="#a5a29b"/><ellipse cx="12" cy="4.4" rx="2.4" ry="1.7" fill="var(--accent)"/></svg>Cairn<span> · carnet de trail · v2.4 β2</span></h1><div class="sub" id="subtitle"></div></div>
   <nav>
     <a href="#carte" data-v="carte"><span class="lg">1 · Terrain de jeu</span><span class="sm"><span class="ic">🗺️</span>Terrain</span></a>
     <a href="#performance" data-v="performance"><span class="lg">2 · Sous la frontale</span><span class="sm"><span class="ic">📈</span>Forme</span></a>
@@ -367,6 +367,8 @@ header{padding-top:max(12px,env(safe-area-inset-top))}
     </ol>
     <label class="f" style="display:block;margin:10px 0 6px">Clé API personnelle Garmin
       <input type="password" id="gKey" autocomplete="off" spellcheck="false" style="width:100%;margin-top:4px;padding:8px;font:inherit;border:1px solid #d6d3cc;border-radius:8px"></label>
+    <label class="f" style="display:block;margin:10px 0 6px">Adresse du relais <span class="sub">(ex. https://cairn-garmin.ton-compte.workers.dev — laisse vide pour un accès direct)</span>
+      <input type="url" id="gRelay" autocomplete="off" spellcheck="false" placeholder="https://…workers.dev" style="width:100%;margin-top:4px;padding:8px;font:inherit;border:1px solid #d6d3cc;border-radius:8px"></label>
     <label class="f" style="flex-direction:row;align-items:center;gap:8px;margin-bottom:10px"><input type="checkbox" id="gKeep"> Mémoriser la clé sur ce téléphone</label>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="pri" id="gRun">Lancer le test</button><button id="gCopy" style="display:none">Copier le rapport</button><button id="gForget" style="display:none">Oublier la clé</button></div>
     <pre id="gOut" style="white-space:pre-wrap;font-size:12.5px;line-height:1.45;background:#f7f6f3;border:1px solid #e4e1da;border-radius:8px;padding:10px;margin-top:12px;display:none"></pre>
@@ -728,13 +730,14 @@ async function runFull(file){
 }
 
 /* ---------- test de l'API personnelle Garmin ---------- */
-const GHOST='https://personal.connectapi.garmin.com';
+let GHOST='https://personal.connectapi.garmin.com';
 let _gInit=false;
 function showGarmin(){
   $$('.view').forEach(e=>e.classList.toggle('on', e.id==='v-garmin'));
   $$('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v==='accueil'));
   if(_gInit) return; _gInit=true;
   let saved=''; try{ saved=localStorage.getItem('cairn_gkey')||''; }catch(e){}
+  try{ $('#gRelay').value=localStorage.getItem('cairn_grelay')||''; }catch(e){}
   if(saved){ $('#gKey').value=saved; $('#gKeep').checked=true; $('#gForget').style.display=''; }
   $('#gRun').onclick=garminTest;
   $('#gForget').onclick=()=>{ try{ localStorage.removeItem('cairn_gkey'); }catch(e){} $('#gKey').value=''; $('#gKeep').checked=false; $('#gForget').style.display='none'; };
@@ -769,20 +772,27 @@ async function garminTest(){
   const L=[]; const log=t=>{ L.push(t); out.textContent=L.join('\n'); };
   if(!key){ log('⚠️ Colle d\'abord ta clé API Garmin.'); return; }
   try{ if($('#gKeep').checked){ localStorage.setItem('cairn_gkey',key); $('#gForget').style.display=''; } else localStorage.removeItem('cairn_gkey'); }catch(e){}
+  const relay=$('#gRelay').value.trim().replace(/\/+$/,'');
+  if(relay && !/^https:\/\/[^\s/]+/.test(relay)){ log('⚠️ L\'adresse du relais doit commencer par https://'); return; }
+  try{ relay? localStorage.setItem('cairn_grelay',relay) : localStorage.removeItem('cairn_grelay'); }catch(e){}
+  GHOST = relay || 'https://personal.connectapi.garmin.com';
   $('#gRun').disabled=true;
-  log(`RAPPORT TEST GARMIN – Cairn v2.4 β – ${new Date().toLocaleString('fr-FR')}`);
+  log(`RAPPORT TEST GARMIN – Cairn v2.4 β2 – ${new Date().toLocaleString('fr-FR')}`);
   log(`Appareil : ${/iPhone|iPad/.test(navigator.userAgent)?'iPhone/iPad':/Android/.test(navigator.userAgent)?'Android':'ordinateur'} · ${matchMedia('(display-mode: standalone)').matches?'appli installée':'navigateur'}`);
   try{
+    if(relay){ log('\n0) Relais : '+relay.replace(/^https:\/\//,'').replace(/^[^.]+/,'…'));
+      try{ const t=await (await fetch(relay+'/')).text(); log(/OK/.test(t)? '✅ relais joignable' : '⚠️ réponse inattendue : '+t.slice(0,80)); }
+      catch(e){ log('❌ relais injoignable : '+e.message+' (adresse exacte ? relais bien déployé ?)'); return; } }
     // 1. jeton
     log('\n1) Échange de la clé contre un jeton…');
     let r;
     try{ r=await fetch(GHOST+'/personalapitoken-service/personal-api/personal-api-key/token',{method:'POST',headers:{'Authorization':'ApiKey '+key}}); }
-    catch(e){ log('❌ ACCÈS DIRECT BLOQUÉ : le navigateur refuse l\'appel (probablement CORS côté Garmin). → Il faudra un petit relais.\n   Détail : '+e.message); return; }
+    catch(e){ log(relay? '❌ le relais ne répond pas à la demande de jeton : '+e.message : '❌ ACCÈS DIRECT BLOQUÉ : le navigateur refuse l\'appel (probablement CORS côté Garmin). → Il faudra un petit relais.\n   Détail : '+e.message); return; }
     const raw=(await r.text()).trim();
     if(!r.ok){ log(`❌ Garmin répond ${r.status} ${r.statusText} : ${r.status===401||r.status===403?'clé refusée ou expirée':'erreur'}.\n   Début de réponse : ${raw.slice(0,160).replace(key,'[clé]')}`); return; }
     let tok=raw; if(raw.startsWith('{')){ try{ const j=JSON.parse(raw); tok=j.access_token||j.accessToken||j.token||''; }catch(e){} } tok=tok.replace(/^"|"$/g,'');
     let exp=''; try{ const pl=JSON.parse(atob(tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); if(pl.exp) exp=' · expire le '+new Date(pl.exp*1000).toLocaleString('fr-FR'); }catch(e){}
-    log(`✅ Accès direct OK (réponse ${raw.startsWith('{')?'JSON':'texte'}, jeton de ${tok.length} caractères${exp})`);
+    log(`✅ Accès ${relay?'via le relais':'direct'} OK (réponse ${raw.startsWith('{')?'JSON':'texte'}, jeton de ${tok.length} caractères${exp})`);
     const api=async(path)=>{ const x=await fetch(GHOST+path,{headers:{'Authorization':'Bearer '+tok}}); if(!x.ok) throw new Error(`${x.status} ${x.statusText} sur ${path.split('?')[0]}`); return x; };
     // 2. dernières activités
     log('\n2) Dernières activités…');
